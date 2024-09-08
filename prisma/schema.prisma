@@ -1,0 +1,79 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              Int               @id @default(autoincrement())
+  username        String            @unique
+  password        String
+  bio             String?           
+  createdAt       DateTime          @default(now())
+  photo           String?            
+
+  messages        Message[]
+
+  groups          Group[]           @relation("GroupMembers") 
+  directMessages  DirectMessage[]   @relation("DirectMessageUsers") // Participants in the 1-to-1 conversation
+  messageReceipts MessageReciept[]
+  
+  contacts        User[]            @relation("UserContacts") // I want each user to have contacts. They can the contact list to create new Groups to message
+  contactedBy     User[]            @relation("UserContacts")
+}
+
+model Message {
+  id              Int               @id @default(autoincrement())
+  content         String            // This way it can either be a url for an embedded photo, or a message
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  authorId        Int
+  groupId         Int?
+  directMessageId Int?        
+
+  author          User              @relation(fields: [authorId], references: [id])
+  group           Group?            @relation(fields: [groupId], references: [id])
+  directMessage   DirectMessage?    @relation(fields: [directMessageId], references: [id])
+
+  receipts        MessageReciept[]  
+}
+
+// Beneath model allows for me to request the messages from each chat? Allows for one to one chats as well as groups?
+model Group {
+  id        Int       @id @default(autoincrement())
+  name      String
+  createdAt DateTime  @default(now())
+
+  members   User[]    @relation("GroupMembers")
+
+  messages  Message[]
+}
+
+model DirectMessage {
+  id        Int         @id @default(autoincrement())
+
+  messages  Message[]
+  users     User[]      @relation("DirectMessageUsers") // Participants in the 1-to-1 conversation
+}
+
+model MessageReciept {
+  id          Int       @id @default(autoincrement())
+  messageId   Int
+  userId      Int
+  delivered   Boolean   @default(false)
+  read        Boolean   @default(false)
+  readAt      DateTime?
+
+  message     Message   @relation(fields: [messageId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
+}
