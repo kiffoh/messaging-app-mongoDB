@@ -12,7 +12,6 @@ passport.use(new LocalStrategy({
     usernameField: 'username',
     passwordField: 'password'
 }, async (username, password, done) => {
-
     try {
         const user = await prisma.user.findUnique({
             where: {
