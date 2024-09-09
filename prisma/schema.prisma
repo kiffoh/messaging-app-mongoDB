@@ -17,9 +17,9 @@ model User {
   id              Int               @id @default(autoincrement())
   username        String            @unique
   password        String
-  bio             String?           
+  bio             String?           @default("Hello, I am on EasyMessage!")
   createdAt       DateTime          @default(now())
-  photo           String?            
+  photo           String?           @default("https://res.cloudinary.com/dmaq0peyx/image/upload/v1725813381/o3aadn8b9aww4wuzethd.svg")
 
   messages        Message[]
 
