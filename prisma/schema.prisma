@@ -53,17 +53,24 @@ model Group {
   id        Int       @id @default(autoincrement())
   name      String
   createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   members   User[]    @relation("GroupMembers")
 
   messages  Message[]
+
+  @@index([updatedAt, createdAt])
 }
 
 model DirectMessage {
-  id        Int         @id @default(autoincrement())
+  id          Int         @id @default(autoincrement())
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 
-  messages  Message[]
-  users     User[]      @relation("DirectMessageUsers") // Participants in the 1-to-1 conversation
+  messages    Message[]
+  members     User[]      @relation("DirectMessageUsers") // Participants in the 1-to-1 conversation
+
+  @@index([updatedAt, createdAt])
 }
 
 model MessageReciept {
