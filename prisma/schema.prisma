@@ -24,7 +24,6 @@ model User {
   messages        Message[]
 
   groups          Group[]           @relation("GroupMembers") 
-  directMessages  DirectMessage[]   @relation("DirectMessageUsers") // Participants in the 1-to-1 conversation
   messageReceipts MessageReciept[]
   
   contacts        User[]            @relation("UserContacts") // I want each user to have contacts. They can the contact list to create new Groups to message
@@ -38,12 +37,10 @@ model Message {
   updatedAt       DateTime          @updatedAt
 
   authorId        Int
-  groupId         Int?
-  directMessageId Int?        
+  groupId         Int
 
   author          User              @relation(fields: [authorId], references: [id])
-  group           Group?            @relation(fields: [groupId], references: [id])
-  directMessage   DirectMessage?    @relation(fields: [directMessageId], references: [id])
+  group           Group             @relation(fields: [groupId], references: [id])
 
   receipts        MessageReciept[]  
 }
@@ -51,24 +48,13 @@ model Message {
 // Beneath model allows for me to request the messages from each chat? Allows for one to one chats as well as groups?
 model Group {
   id        Int       @id @default(autoincrement())
-  name      String
+  name      String?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
   members   User[]    @relation("GroupMembers")
 
   messages  Message[]
-
-  @@index([updatedAt, createdAt])
-}
-
-model DirectMessage {
-  id          Int         @id @default(autoincrement())
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-
-  messages    Message[]
-  members     User[]      @relation("DirectMessageUsers") // Participants in the 1-to-1 conversation
 
   @@index([updatedAt, createdAt])
 }

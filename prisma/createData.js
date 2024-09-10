@@ -57,7 +57,7 @@ async function main() {
   });
 
   // Create Direct Message Chat
-  const directMessageChat = await prisma.directMessage.create({
+  const directMessageChat = await prisma.group.create({
     data: {
       members: {
         connect: [{ id: user1.id }, { id: user2.id }],
@@ -70,7 +70,7 @@ async function main() {
     data: {
       content: 'Hey Jane, how are you?',
       authorId: user1.id,
-      directMessageId: directMessageChat.id,
+      groupId: directMessageChat.id,
     },
   });
 
@@ -78,12 +78,12 @@ async function main() {
     data: {
       content: 'I am good, how about you?',
       authorId: user2.id,
-      directMessageId: directMessageChat.id,
+      groupId: directMessageChat.id,
     },
   });
 
   // Create Direct Message Chat
-  const directMessageChat2 = await prisma.directMessage.create({
+  const directMessageChat2 = await prisma.group.create({
     data: {
       members: {
         connect: [{ id: 9 }, { id: 10 }],
@@ -96,7 +96,7 @@ async function main() {
     data: {
       content: 'Hello Tom, how are you?',
       authorId: 9,
-      directMessageId: directMessageChat2.id,
+      groupId: directMessageChat2.id,
     },
   });
 
@@ -104,7 +104,7 @@ async function main() {
     data: {
       content: 'I am doing well thanks.',
       authorId: 10,
-      directMessageId: directMessageChat2.id,
+      groupId: directMessageChat2.id,
     },
   }); 
 
