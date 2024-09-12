@@ -6,7 +6,7 @@ async function getMessages(req, res) {
     const userID = parseInt(userId)
 
     try {
-        const groupChats = await prisma.group.findMany({
+        const userMessages = await prisma.group.findMany({
             where: {
                 members: {
                     some: {
@@ -28,34 +28,23 @@ async function getMessages(req, res) {
             
         })
 
-        const directMessageChats = await prisma.directMessage.findMany({
-            where: {
-                members: {
-                    some: {
-                        id: userID,
-                    }
+        // Name the unnamed groups/direct messages, specific to the user
+        userMessages.forEach(chat => {
+            if (chat.name === null) {
+                if (chat.members.length  <= 2) {
+                    const receipient = chat.members.find(member => member.id !== userID);
+                    chat.name = receipient.username;
+                    chat.photo = receipient.photo;
+                } else {
+                    const otherMembers = chat.members.filter(member => member.id !== userID);
+                    chat.name = otherMembers.slice(0, otherMembers.length - 1).join(', ') + ' & ' + otherMembers.slice(otherMembers.length - 1);
+                    chat.photo = "https://res.cloudinary.com/dmaq0peyx/image/upload/v1725813381/o3aadn8b9aww4wuzethd.svg";
                 }
-            },
-            include: {
-                members: true,
-                messages: {
-                    orderBy: {
-                        createdAt: 'desc'
-                    },
-                }
-            },
-            orderBy: {
-                updatedAt: 'desc',
             }
         })
 
-        directMessageChats.forEach(chat => {
-            const receipient = chat.members.find(member => member.id !== userID);
-            chat.name = receipient.username;
-        })
-
         // Merging and sorting by `updatedAt`
-        const userMessages = mergeSort(groupChats, directMessageChats);
+        // const userMessages = mergeSort(groupChats, directMessageChats);
 
         console.log(JSON.stringify(userMessages, null, 2))
         res.json(userMessages);
