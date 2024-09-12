@@ -49,6 +49,7 @@ model Message {
 model Group {
   id        Int       @id @default(autoincrement())
   name      String?
+  photo     String?   
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
