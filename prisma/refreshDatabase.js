@@ -5,7 +5,6 @@ async function main() {
     await prisma.messageReciept.deleteMany({})
     await prisma.message.deleteMany({})
     await prisma.group.deleteMany({})
-    await prisma.directMessage.deleteMany({})
     console.log('Fake data deleted successfully');
 }
 
