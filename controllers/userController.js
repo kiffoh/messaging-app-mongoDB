@@ -40,7 +40,7 @@ async function createUser(req, res) {
         
         // Create JWT token
         const token = jwt.sign(
-            { id: user.id, username: user.username, bio: user.bio, createdAtDate: formattedDateTime.date, createdAtTime: formattedDateTime.time, userPhoto: user.photo },
+            { id: user.id, username: user.username, bio: user.bio, createdAtDate: formattedDateTime.date, createdAtTime: formattedDateTime.time, photo: user.photo },
             process.env.SECRET_KEY, // Use your secret key from environment variables
             { expiresIn: '1h' } // Token expires in 1 hour
         );
@@ -74,7 +74,7 @@ function logIn(req, res, next) {
 
         // Authenticate user
         const token = jwt.sign(
-            { id: user.id, username: user.username, bio: user.bio, createdAtDate: formattedDateTime.date, createdAtTime: formattedDateTime.time, userPhoto: user.photo },
+            { id: user.id, username: user.username, bio: user.bio, createdAtDate: formattedDateTime.date, createdAtTime: formattedDateTime.time, photo: user.photo },
             process.env.SECRET_KEY,
             {expiresIn: '1hr'}
         )
@@ -84,7 +84,44 @@ function logIn(req, res, next) {
     })(req, res, next);
 }
 
+async function getUser(req, res) {
+    const {userId} = req.params;
+    const userID = parseInt(userId)
+
+    if (isNaN(userID)) {
+        return res.status(400).json({ message: 'Invalid user ID.' });
+    }
+
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                id: userID
+            },
+            include: {
+                contacts: true
+            }
+        })
+
+        if (!user) return res.status(404).json({message: 'User not found.'})
+
+         // Format createdAt to desired format
+         const formattedDateTime = formatDateTime(user.createdAt);
+
+         // Create a new user object with formatted date and time
+         const newUser = {
+             ...user,
+             createdAtDate: formattedDateTime.date,
+             createdAtTime: formattedDateTime.time
+         };
+        console.log(newUser.contacts)
+         return res.json(newUser); 
+    } catch (err) {
+        return res.status(500).json({message: 'An unknown error occured when trying to getUser data.'})
+    }
+}
+
 module.exports = {
     createUser,
-    logIn
+    logIn,
+    getUser
 }
