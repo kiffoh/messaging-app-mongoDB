@@ -33,6 +33,7 @@ async function main() {
   const group = await prisma.group.create({
     data: {
       name: 'Study Group',
+      directMsg: false,
       members: {
         connect: [{ id: user1.id }, { id: user2.id }, {id: 9}],
       },
@@ -59,6 +60,7 @@ async function main() {
   // Create Direct Message Chat
   const directMessageChat = await prisma.group.create({
     data: {
+      directMsg: true,
       members: {
         connect: [{ id: user1.id }, { id: user2.id }],
       },
@@ -85,6 +87,7 @@ async function main() {
   // Create Direct Message Chat
   const directMessageChat2 = await prisma.group.create({
     data: {
+      directMsg: false,
       members: {
         connect: [{ id: 9 }, { id: 10 }],
       },
@@ -126,6 +129,35 @@ async function main() {
       delivered: true,
       read: false,
     },
+  });
+
+  // Create Direct Message Chat
+  const groupChat2 = await prisma.group.create({
+    data: {
+      directMsg: true,
+      members: {
+        connect: [{ id: 9 }, { id: 10 }, {id: 8}, {id:6}],
+      },
+    },
+  });
+
+  // Create Direct Message Chat
+  const groupChat2Message1 = await prisma.message.create({
+    data: {
+      content: 'This is the unamed Group chat.',
+      authorId: 10,
+      groupId: groupChat2.id,
+    },
+  });
+
+  // Add contacts for user 9
+  const contactsForUser9 = await prisma.user.update({
+    where: { id: 9 },
+    data: {
+      contacts: {
+        connect: [{ id: user1.id }, { id: user2.id }, { id: 10 }] // Add any users you'd like to user 9's contact list
+      }
+    }
   });
 
   console.log('Fake data created successfully');
