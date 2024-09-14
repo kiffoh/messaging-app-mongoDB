@@ -37,20 +37,39 @@ async function getMessages(req, res) {
                     chat.photo = receipient.photo;
                 } else {
                     const otherMembers = chat.members.filter(member => member.id !== userID);
-                    chat.name = otherMembers.slice(0, otherMembers.length - 1).join(', ') + ' & ' + otherMembers.slice(otherMembers.length - 1);
-                    chat.photo = "https://res.cloudinary.com/dmaq0peyx/image/upload/v1725813381/o3aadn8b9aww4wuzethd.svg";
-                }
+                    const otherMembersUsernames = []
+                    otherMembers.forEach(member => otherMembersUsernames.push(member.username))
+                    chat.name = otherMembersUsernames.slice(0, otherMembersUsernames.length - 1).join(', ') + ' & ' + otherMembersUsernames.slice(otherMembersUsernames.length - 1);
+                    }
             }
+            if (chat.photo === null) chat.photo = "https://res.cloudinary.com/dmaq0peyx/image/upload/v1725813381/o3aadn8b9aww4wuzethd.svg";
         })
 
         // Merging and sorting by `updatedAt`
         // const userMessages = mergeSort(groupChats, directMessageChats);
-
-        console.log(JSON.stringify(userMessages, null, 2))
         res.json(userMessages);
     } catch (err) {
         console.log(err);
         res.status(500).send('Internal Server Error'); // Handle errors properly
+    }
+}
+
+async function createMessage(req, res) {
+    const {content, groupId, authorId} = req.body;
+
+    try {
+        const message = await prisma.message.create({
+            data: {
+                content,
+                groupId,
+                authorId
+            }
+        })
+
+        res.status(201).json(message)
+    } catch (err) {
+        console.log('Error creating message: ', err);
+        res.status(500).send('Internal Server Error');
     }
 }
 
@@ -79,4 +98,7 @@ function mergeSort(arr1, arr2) {
     return res;
 }
 
-module.exports = {getMessages};
+module.exports = {
+    getMessages,
+    createMessage
+};
