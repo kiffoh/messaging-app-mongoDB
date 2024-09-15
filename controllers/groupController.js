@@ -34,7 +34,8 @@ async function getGroup(req, res) {
                 id: groupID
             },
             include: {
-                members: true
+                members: true,
+                admins: true,
             }
         })
 
@@ -133,6 +134,7 @@ async function createDirectMessage(req, res) {
 async function createGroup(req, res) {
     const { members } = req.body;
     const parsedMembers = JSON.parse(members); // Parse members once
+    const groupCreator = parsedMembers[0] // First member is the user who created the group
 
     // Set the group name: use provided name or generate one
     const groupName = req.body.name || nameGroup(parsedMembers);
@@ -140,10 +142,6 @@ async function createGroup(req, res) {
     const groupPhotoUrl = req.file ? req.file.path : process.env.DEFAULT_GROUP_PICTURE; // Multer will add file information here
     
     const directMsg = false;
-    console.log(groupName);
-    console.log(groupPhotoUrl);
-    console.log(members)
-
 
     try {
         const existingGroup = await prisma.group.findFirst({
@@ -151,7 +149,7 @@ async function createGroup(req, res) {
                 directMsg,
                 name: groupName,
                 members: {
-                    every: { id: { in: JSON.parse(members).map(member => member.id) } }
+                    every: { id: { in: parsedMembers.map(member => member.id) } }
                 },
             },
             include: {
@@ -173,6 +171,9 @@ async function createGroup(req, res) {
                 },
                 photo: groupPhotoUrl, // Save the Cloudinary URL for the group photo
                 directMsg: false,
+                admins: {
+                    connect: {id: groupCreator.id}
+                }
             },
         });
 

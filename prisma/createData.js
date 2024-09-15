@@ -1,5 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const defaultPicture = process.env.DEFAULT_PICTURE;
+const defaultGroupPicture = process.env.DEFAULT_GROUP_PICTURE;
 
 async function main() {
   /* Create Users
@@ -37,6 +39,10 @@ async function main() {
       members: {
         connect: [{ id: user1.id }, { id: user2.id }, {id: 9}],
       },
+      photo: defaultGroupPicture,
+      admins: {
+        connect: {id: user1.id}
+      }
     },
   });
 
@@ -64,6 +70,7 @@ async function main() {
       members: {
         connect: [{ id: user1.id }, { id: user2.id }],
       },
+      photo: defaultPicture,
     },
   });
 
@@ -138,6 +145,10 @@ async function main() {
       members: {
         connect: [{ id: 9 }, { id: 10 }, {id: 8}, {id:6}],
       },
+      photo: defaultGroupPicture,
+      admins: {
+        connect: {id: 9}
+      }
     },
   });
 

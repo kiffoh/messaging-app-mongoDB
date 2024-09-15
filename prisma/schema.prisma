@@ -23,7 +23,8 @@ model User {
 
   messages        Message[]
 
-  groups          Group[]           @relation("GroupMembers") 
+  groups          Group[]           @relation("GroupMembers")
+  adminGroups     Group[]           @relation("GroupAdmins")  // New relation to track groups where the user is an admin
   messageReceipts MessageReciept[]
   
   contacts        User[]            @relation("UserContacts") // I want each user to have contacts. They can the contact list to create new Groups to message
@@ -55,6 +56,7 @@ model Group {
   directMsg Boolean
 
   members   User[]    @relation("GroupMembers")
+  admins    User[]    @relation("GroupAdmins") 
 
   messages  Message[]
 
