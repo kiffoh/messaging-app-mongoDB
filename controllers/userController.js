@@ -113,7 +113,6 @@ async function getUser(req, res) {
              createdAtDate: formattedDateTime.date,
              createdAtTime: formattedDateTime.time
          };
-        console.log(newUser.contacts)
          return res.json(newUser); 
     } catch (err) {
         return res.status(500).json({message: 'An unknown error occured when trying to getUser data.'})
