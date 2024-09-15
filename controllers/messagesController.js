@@ -40,9 +40,10 @@ async function getMessages(req, res) {
                     const otherMembersUsernames = []
                     otherMembers.forEach(member => otherMembersUsernames.push(member.username))
                     chat.name = otherMembersUsernames.slice(0, otherMembersUsernames.length - 1).join(', ') + ' & ' + otherMembersUsernames.slice(otherMembersUsernames.length - 1);
-                    }
+                }
             }
-            if (chat.photo === null) chat.photo = "https://res.cloudinary.com/dmaq0peyx/image/upload/v1725813381/o3aadn8b9aww4wuzethd.svg";
+            if (chat.photo === null && chat.members.length === 2) chat.photo = process.env.DEFAULT_PICTURE;
+            else if (chat.photo === null) chat.photo = process.env.DEFAULT_GROUP_PICTURE
         })
 
         // Merging and sorting by `updatedAt`
