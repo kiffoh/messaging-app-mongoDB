@@ -87,7 +87,7 @@ async function main() {
   // Create Direct Message Chat
   const directMessageChat2 = await prisma.group.create({
     data: {
-      directMsg: false,
+      directMsg: true,
       members: {
         connect: [{ id: 9 }, { id: 10 }],
       },
@@ -134,7 +134,7 @@ async function main() {
   // Create Direct Message Chat
   const groupChat2 = await prisma.group.create({
     data: {
-      directMsg: true,
+      directMsg: false,
       members: {
         connect: [{ id: 9 }, { id: 10 }, {id: 8}, {id:6}],
       },
@@ -144,7 +144,7 @@ async function main() {
   // Create Direct Message Chat
   const groupChat2Message1 = await prisma.message.create({
     data: {
-      content: 'This is the unamed Group chat.',
+      content: 'This is the unnamed Group chat.',
       authorId: 10,
       groupId: groupChat2.id,
     },
