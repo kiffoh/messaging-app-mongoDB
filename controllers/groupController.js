@@ -212,10 +212,49 @@ function personalisedGroupName(group, userID) {
     if (group.photo === null) group.photo = process.env.DEFAULT_PICTURE;
 }
 
+async function updateGroup(req, res) {
+    const {groupId} = req.params;
+    const {username, photo, bio} = req.body;
+
+    try {
+        const updatedGroup = await prisma.group.update({
+            where: {
+                id: parseInt(groupId),
+            },
+            data: {
+                name: username,
+                photo,
+                bio
+            },
+            include: {
+                members: true,
+                admins: true,
+            }
+        })
+
+        // Format createdAt to desired format
+        const formattedDateTime = formatDateTime(updatedGroup.createdAt);
+
+        // Create a new user object with formatted date and time
+        const updatedGroupFormatted = {
+            ...updatedGroup,
+            createdAtDate: formattedDateTime.date,
+            createdAtTime: formattedDateTime.time
+        };
+
+        console.log(updatedGroupFormatted)
+
+        res.status(200).json(updatedGroupFormatted);
+    } catch (error) {
+        console.error("Error updating group profile:", error);
+        res.status(500).json({ error: 'An error occurred while updating the profile.' });
+    }
+}
 
 
 module.exports = {
     getGroup,
     createDirectMessage,
-    createGroup
+    createGroup,
+    updateGroup
 }
