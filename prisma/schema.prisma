@@ -54,6 +54,7 @@ model Group {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   directMsg Boolean
+  bio       String?   @default("We are the greatest tribe on EasyMessage.")
 
   members   User[]    @relation("GroupMembers")
   admins    User[]    @relation("GroupAdmins") 
