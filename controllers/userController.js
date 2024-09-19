@@ -115,12 +115,69 @@ async function getUser(req, res) {
          };
          return res.json(newUser); 
     } catch (err) {
-        return res.status(500).json({message: 'An unknown error occured when trying to getUser data.'})
+        return res.status(500).json({message: 'An unknown error occurred when trying to getUser data.'})
+    }
+}
+
+async function getAllUsernames(req, res) {
+    try {
+        const users = await prisma.user.findMany({
+            select: {
+                username: true,
+                id: true
+            }
+        });
+
+        if (users.length === 0) return res.status(404).json({message: 'No users found.'})
+
+        return res.json(users)
+    } catch (err) {
+        return res.status(500).json({message: 'An unknown error occurred when trying to getAllUsernames.'})
+    }
+}
+
+async function updateUser(req, res) {
+    const {userId} = req.params;
+    const {username, photo, bio} = req.body;
+
+    try {
+        const updatedUser = await prisma.user.update({
+            where: {
+                id: parseInt(userId),
+            },
+            data: {
+                username,
+                photo,
+                bio
+            },
+            include: {
+                contacts: true
+            }
+        })
+
+        // Format createdAt to desired format
+        const formattedDateTime = formatDateTime(updatedUser.createdAt);
+
+        // Create a new user object with formatted date and time
+        const updatedUserFormatted = {
+            ...updatedUser,
+            createdAtDate: formattedDateTime.date,
+            createdAtTime: formattedDateTime.time
+        };
+
+        console.log(updatedUser)
+
+        res.status(200).json(updatedUserFormatted);
+    } catch (error) {
+        console.error("Error updating user profile:", error);
+        res.status(500).json({ error: 'An error occurred while updating the profile.' });
     }
 }
 
 module.exports = {
     createUser,
     logIn,
-    getUser
+    getUser,
+    getAllUsernames,
+    updateUser
 }

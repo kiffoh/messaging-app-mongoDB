@@ -9,4 +9,10 @@ router.post('/login', userController.logIn);
 
 router.get('/:userId/profile', userController.getUser);
 
+router.put('/:userId/profile', userController.updateUser);
+
+router.get('/usernames', userController.getAllUsernames);
+
+
+
 module.exports = router;
