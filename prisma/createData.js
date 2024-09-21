@@ -119,7 +119,7 @@ async function main() {
   }); 
 
   // Create Message Receipts
-  const receipt1 = await prisma.messageReciept.create({
+  const receipt1 = await prisma.messageReceipt.create({
     data: {
       messageId: groupMessage1.id,
       userId: user2.id,
@@ -129,7 +129,7 @@ async function main() {
     },
   });
 
-  const receipt2 = await prisma.messageReciept.create({
+  const receipt2 = await prisma.messageReceipt.create({
     data: {
       messageId: directMessage1.id,
       userId: user2.id,

@@ -25,7 +25,7 @@ model User {
 
   groups          Group[]           @relation("GroupMembers")
   adminGroups     Group[]           @relation("GroupAdmins")  // New relation to track groups where the user is an admin
-  messageReceipts MessageReciept[]
+  messageReceipts MessageReceipt[]
   
   contacts        User[]            @relation("UserContacts") // I want each user to have contacts. They can the contact list to create new Groups to message
   contactedBy     User[]            @relation("UserContacts")
@@ -43,7 +43,7 @@ model Message {
   author          User              @relation(fields: [authorId], references: [id])
   group           Group             @relation(fields: [groupId], references: [id])
 
-  receipts        MessageReciept[]  
+  receipts        MessageReceipt[]  
 }
 
 // Beneath model allows for me to request the messages from each chat? Allows for one to one chats as well as groups?
@@ -64,7 +64,7 @@ model Group {
   @@index([updatedAt, createdAt])
 }
 
-model MessageReciept {
+model MessageReceipt {
   id          Int       @id @default(autoincrement())
   messageId   Int
   userId      Int

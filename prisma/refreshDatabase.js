@@ -2,7 +2,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function main() {
-    await prisma.messageReciept.deleteMany({})
+    await prisma.messageReceipt.deleteMany({})
     await prisma.message.deleteMany({})
     await prisma.group.deleteMany({})
     console.log('Fake data deleted successfully');
