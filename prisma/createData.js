@@ -166,7 +166,7 @@ async function main() {
     where: { id: 9 },
     data: {
       contacts: {
-        connect: [{ id: user1.id }, { id: user2.id }, { id: 10 }] // Add any users you'd like to user 9's contact list
+        connect: [{ id: user1.id }, { id: user2.id }, { id: 1}, { id: 12}, { id: 2}, { id: 3}] // Add any users you'd like to user 9's contact list
       }
     }
   });
