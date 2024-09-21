@@ -37,10 +37,10 @@ model Message {
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
 
-  authorId        Int
+  authorId        Int?
   groupId         Int
 
-  author          User              @relation(fields: [authorId], references: [id])
+  author          User?             @relation(fields: [authorId], references: [id], onDelete: SetNull)
   group           Group             @relation(fields: [groupId], references: [id])
 
   receipts        MessageReceipt[]  
