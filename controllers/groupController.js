@@ -251,10 +251,68 @@ async function updateGroup(req, res) {
     }
 }
 
+async function deleteGroup(req, res) {
+    const {groupId} = req.params;
+    const groupID = parseInt(groupId)
+    const {user} = req.body;
+
+    try {
+        const group = await prisma.group.findUnique({
+            where: {
+                id: parseInt(groupID)
+            },
+            include: {
+                admins: true
+            }
+        })
+
+        if (!group) {
+            return res.status(404).json({ message: 'Group not found.' });
+        }
+
+        const userIsAdmin = group.admins.some(admin => admin.id === user.id)
+
+        if (userIsAdmin) {
+            // Perform the delete
+            await prisma.$transaction(async (prisma) => {
+                // Step 1: Delete related message receipts
+                await prisma.messageReceipt.deleteMany({
+                where: {
+                    message: {
+                        groupId: groupID,
+                    },
+                },
+                });
+        
+                // Step 2: Delete related messages
+                await prisma.message.deleteMany({
+                where: { groupId: groupID },
+                });
+        
+                // Step 3: Delete the group itself
+                await prisma.group.delete({
+                where: { id: groupID },
+                });
+            });
+              
+            return res.status(200).json({ message: 'Group successfully deleted.' });
+
+        } else {
+            return res.status(403).json({ message: 'User does not have admin privileges to delete this group.' });
+        }
+
+
+    } catch (err) {
+        console.error(err); // Log the error
+        return res.status(500).json({message: 'An unknown error occurred when trying to delete the group.'})
+    }
+}
+
 
 module.exports = {
     getGroup,
     createDirectMessage,
     createGroup,
-    updateGroup
+    updateGroup,
+    deleteGroup
 }
