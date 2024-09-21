@@ -10,7 +10,7 @@ cloudinary.config({
 });
 
 // Set up Multer to use Cloudinary storage
-const storage = new CloudinaryStorage({
+const groupPhotos = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
         folder: 'group_photos', // Folder in Cloudinary where files will be stored
@@ -19,6 +19,20 @@ const storage = new CloudinaryStorage({
     },
 });
 
-const upload = multer({ storage });
+// Set up Multer to use Cloudinary storage
+const userPhotos = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'profile_photos', // Folder in Cloudinary where files will be stored
+        allowed_formats: ['jpg', 'png', 'svg'],
+        public_id: (req, file) => file.originalname.split('.')[0], // Use the original file name
+    },
+});
 
-module.exports = upload;
+const uploadGroupPhoto = multer({ storage: groupPhotos });
+const uploadUserPhoto = multer({ storage: userPhotos });
+
+module.exports = {
+    uploadGroupPhoto,
+    uploadUserPhoto
+}
