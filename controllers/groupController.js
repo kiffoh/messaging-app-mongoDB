@@ -214,7 +214,8 @@ function personalisedGroupName(group, userID) {
 
 async function updateGroup(req, res) {
     const {groupId} = req.params;
-    const {username, photo, bio} = req.body;
+    const {username, bio} = req.body;
+    const photo = req.file.path;
 
     try {
         const updatedGroup = await prisma.group.update({

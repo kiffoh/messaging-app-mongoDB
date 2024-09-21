@@ -138,7 +138,8 @@ async function getAllUsernames(req, res) {
 
 async function updateUser(req, res) {
     const {userId} = req.params;
-    const {username, photo, bio} = req.body;
+    const {username, bio} = req.body;
+    const photo = req.file.path;
 
     try {
         const updatedUser = await prisma.user.update({
