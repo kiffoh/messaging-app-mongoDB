@@ -174,10 +174,45 @@ async function updateUser(req, res) {
     }
 }
 
+async function deleteUser(req, res) {
+    const {userId} = req.params;
+    const userID = parseInt(userId);
+
+    try {
+        const user = await prisma.user.findUnique({ where: { id: userID } });
+        if (!user) return res.status(404).json({ message: 'User not found.' });
+
+        // Perform the delete
+        await prisma.$transaction(async (prisma) => {
+            // Delete related message receipts
+            await prisma.messageReceipt.deleteMany({
+              where: {
+                message: {
+                  authorId: userID,
+                },
+              },
+            });
+    
+             // Delete the user
+            await prisma.user.delete({
+                where: {
+                    id: userID
+                }
+            })
+        })
+
+        return res.status(200).json({ message: 'User successfully deleted.' });
+    } catch (err) {
+        console.error(err); // Log the error for debugging
+        return res.status(500).json({message: 'An unknown error occurred when trying to delete the user.'})
+    }
+}
+
 module.exports = {
     createUser,
     logIn,
     getUser,
     getAllUsernames,
-    updateUser
+    updateUser,
+    deleteUser
 }
