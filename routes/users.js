@@ -11,6 +11,8 @@ router.get('/:userId/profile', userController.getUser);
 
 router.put('/:userId/profile', userController.updateUser);
 
+router.delete('/:userId/profile', userController.deleteUser);
+
 router.get('/usernames', userController.getAllUsernames);
 
 
