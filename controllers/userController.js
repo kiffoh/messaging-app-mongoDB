@@ -124,13 +124,22 @@ async function getAllUsernames(req, res) {
         const users = await prisma.user.findMany({
             select: {
                 username: true,
-                id: true
+                id: true,
+                photo: true
             }
         });
 
         if (users.length === 0) return res.status(404).json({message: 'No users found.'})
 
-        return res.json(users)
+        // Only need in development
+        const updatedUsers = users.map(user => {
+            return {
+                ...user,
+                photo: user.photo || process.env.DEFAULT_PICTURE
+            }
+        })
+
+        return res.json(updatedUsers)
     } catch (err) {
         return res.status(500).json({message: 'An unknown error occurred when trying to getAllUsernames.'})
     }
@@ -166,12 +175,49 @@ async function updateUser(req, res) {
             createdAtTime: formattedDateTime.time
         };
 
-        console.log(updatedUser)
-
         res.status(200).json(updatedUserFormatted);
+
     } catch (error) {
         console.error("Error updating user profile:", error);
         res.status(500).json({ error: 'An error occurred while updating the profile.' });
+    }
+}
+
+async function updateUserContacts(req, res) {
+    const {userId} = req.params;
+    const {selectedContacts} = req.body;
+
+    try {
+        const updatedUser =  await prisma.user.update({
+            where: {
+                id: parseInt(userId),
+            },
+            data: {
+                contacts: {
+                    connect: selectedContacts.map(contactId => ({id: contactId}))
+                }
+            },
+            include: {
+                contacts: true,
+                contactedBy: true
+            }
+        })
+
+        // Format createdAt to desired format
+        const formattedDateTime = formatDateTime(updatedUser.createdAt);
+
+        // Create a new user object with formatted date and time
+        const updatedUserFormatted = {
+            ...updatedUser,
+            createdAtDate: formattedDateTime.date,
+            createdAtTime: formattedDateTime.time
+        };
+
+        res.status(200).json(updatedUserFormatted);
+
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({message: "An unknown error occurred when trying to update the user's contacts."})
     }
 }
 
@@ -215,5 +261,6 @@ module.exports = {
     getUser,
     getAllUsernames,
     updateUser,
-    deleteUser
+    deleteUser,
+    updateUserContacts
 }

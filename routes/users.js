@@ -16,6 +16,8 @@ router.delete('/:userId/profile', userController.deleteUser);
 
 router.get('/usernames', userController.getAllUsernames);
 
+router.put('/:userId/update-contacts', userController.updateUserContacts)
+
 
 
 module.exports = router;
