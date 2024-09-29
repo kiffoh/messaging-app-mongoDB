@@ -99,7 +99,66 @@ function mergeSort(arr1, arr2) {
     return res;
 }
 
+async function updateMessage(req, res) {
+    const {content} = req.body;
+    const {chatId, messageId} = req.params;
+    const messageID = parseInt(messageId);
+
+    try {
+        const updatedMessage = await prisma.message.update({
+            where: {
+                id: messageID
+            },
+            data: {
+                content: content
+            }
+        })
+
+        res.status(200).json(updatedMessage);
+
+    } catch (error) {
+        console.error("Error updating message:", error);
+        res.status(500).json({ error: 'An error occurred while updating the message.' });
+    }
+}
+
+async function deleteMessage(req, res) {
+    const {chatId, messageId} = req.params;
+    const messageID = parseInt(messageId);
+
+    try {
+        const message = await prisma.message.findUnique({ where: { id: messageID } });
+        if (!message) return res.status(404).json({ message: 'User not found.' });
+
+        // Perform the delete
+        await prisma.$transaction(async (prisma) => {
+            // Delete related message receipts
+            await prisma.messageReceipt.deleteMany({
+              where: {
+                message: {
+                  id: messageID,
+                },
+              },
+            });
+    
+             // Delete the user
+            await prisma.message.delete({
+                where: {
+                    id: messageID
+                }
+            })
+        })
+
+        return res.status(200).json({ message: 'Message successfully deleted.' });
+    } catch (err) {
+        console.error(err); // Log the error for debugging
+        return res.status(500).json({message: 'An unknown error occurred when trying to delete the message.'})
+    }
+}
+
 module.exports = {
     getMessages,
-    createMessage
+    createMessage,
+    updateMessage,
+    deleteMessage
 };
