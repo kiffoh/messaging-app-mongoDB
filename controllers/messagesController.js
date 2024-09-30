@@ -1,7 +1,7 @@
 const {PrismaClient} = require('@prisma/client');
 const prisma = new PrismaClient();
 
-async function getMessages(req, res) {
+async function getMessages(req, res, next, io) {
     const {userId} = req.params;
     const userID = parseInt(userId)
 
@@ -55,11 +55,11 @@ async function getMessages(req, res) {
     }
 }
 
-async function createMessage(req, res) {
+async function createMessage(req, res, next, io) {
     const {content, groupId, authorId} = req.body;
 
     try {
-        const message = await prisma.message.create({
+        const newMessage = await prisma.message.create({
             data: {
                 content,
                 groupId,
@@ -67,7 +67,10 @@ async function createMessage(req, res) {
             }
         })
 
-        res.status(201).json(message)
+        // Emit the newMessage event to all connected clients
+        io.emit('newMessage', newMessage);
+
+        res.status(201).json(newMessage)
     } catch (err) {
         console.log('Error creating message: ', err);
         res.status(500).send('Internal Server Error');
@@ -99,7 +102,7 @@ function mergeSort(arr1, arr2) {
     return res;
 }
 
-async function updateMessage(req, res) {
+async function updateMessage(req, res, next, io) {
     const {content} = req.body;
     const {chatId, messageId} = req.params;
     const messageID = parseInt(messageId);
@@ -114,6 +117,9 @@ async function updateMessage(req, res) {
             }
         })
 
+        // Emit the messageUpdated event
+        io.emit('messageUpdated', updatedMessage);
+
         res.status(200).json(updatedMessage);
 
     } catch (error) {
@@ -122,13 +128,14 @@ async function updateMessage(req, res) {
     }
 }
 
-async function deleteMessage(req, res) {
+
+async function deleteMessage(req, res, next, io) {
     const {chatId, messageId} = req.params;
     const messageID = parseInt(messageId);
 
     try {
         const message = await prisma.message.findUnique({ where: { id: messageID } });
-        if (!message) return res.status(404).json({ message: 'User not found.' });
+        if (!message) return res.status(404).json({ message: 'Message not found.' });
 
         // Perform the delete
         await prisma.$transaction(async (prisma) => {
@@ -141,7 +148,7 @@ async function deleteMessage(req, res) {
               },
             });
     
-             // Delete the user
+            // Delete the message
             await prisma.message.delete({
                 where: {
                     id: messageID
@@ -149,12 +156,16 @@ async function deleteMessage(req, res) {
             })
         })
 
+        // Emit the messageDeleted event
+        io.emit('messageDeleted', messageID);
+
         return res.status(200).json({ message: 'Message successfully deleted.' });
     } catch (err) {
         console.error(err); // Log the error for debugging
         return res.status(500).json({message: 'An unknown error occurred when trying to delete the message.'})
     }
 }
+
 
 module.exports = {
     getMessages,
