@@ -1,13 +1,18 @@
-var express = require('express');
-var router = express.Router();
-const messagesController = require('../controllers/messagesController');
+const express = require('express');
+const messageController = require('../controllers/messagesController');
 
-router.get('/:userId', messagesController.getMessages);
+module.exports = function(io) {
+    const router = express.Router();
 
-router.post('/:chatId', messagesController.createMessage)
+    // Wrap each controller function to include io
+    const wrapController = (controller) => (req, res, next) => {
+        controller(req, res, next, io);
+    };
 
-router.put('/:chatId/:messageId', messagesController.updateMessage)
+    router.get('/:userId', wrapController(messageController.getMessages));
+    router.post('/:chatId', wrapController(messageController.createMessage));
+    router.put('/:chatId/:messageId', wrapController(messageController.updateMessage));
+    router.delete('/:chatId/:messageId', wrapController(messageController.deleteMessage));
 
-router.delete('/:chatId/:messageId', messagesController.deleteMessage);
-
-module.exports = router;
+    return router;
+};
