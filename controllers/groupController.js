@@ -255,7 +255,7 @@ async function updateGroup(req, res) {
 async function deleteGroup(req, res) {
     const {groupId} = req.params;
     const groupID = parseInt(groupId)
-    const {user} = req.body;
+    const userId = parseInt(req.headers['user-id']);
 
     try {
         const group = await prisma.group.findUnique({
@@ -271,7 +271,9 @@ async function deleteGroup(req, res) {
             return res.status(404).json({ message: 'Group not found.' });
         }
 
-        const userIsAdmin = group.admins.some(admin => admin.id === user.id)
+        console.log(group.admins, userId)
+
+        const userIsAdmin = group.admins.some(admin => admin.id === userId)
 
         if (userIsAdmin) {
             // Perform the delete
