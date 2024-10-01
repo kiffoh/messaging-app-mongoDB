@@ -1,5 +1,6 @@
 const express = require('express');
 const messageController = require('../controllers/messagesController');
+const { uploadMessagePhoto } = require('../configuration/multerConfig');
 
 module.exports = function(io) {
     const router = express.Router();
@@ -10,7 +11,7 @@ module.exports = function(io) {
     };
 
     router.get('/:userId', wrapController(messageController.getMessages));
-    router.post('/:chatId', wrapController(messageController.createMessage));
+    router.post('/:chatId', uploadMessagePhoto.single('photoUrl'), wrapController(messageController.createMessage));
     router.put('/:chatId/:messageId', wrapController(messageController.updateMessage));
     router.delete('/:chatId/:messageId', wrapController(messageController.deleteMessage));
 

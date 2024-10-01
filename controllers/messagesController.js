@@ -57,13 +57,19 @@ async function getMessages(req, res, next, io) {
 
 async function createMessage(req, res, next, io) {
     const {content, groupId, authorId} = req.body;
+    const groupID = parseInt(groupId);
+    const authorID = parseInt(authorId)
+
+    const photoUrl = req.file ? req.file.path : null;
+    console.log(req.file, photoUrl)
 
     try {
         const newMessage = await prisma.message.create({
             data: {
                 content,
-                groupId,
-                authorId
+                photoUrl,
+                groupId: groupID,
+                authorId: authorID
             }
         })
 

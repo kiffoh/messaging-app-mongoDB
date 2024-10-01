@@ -29,10 +29,22 @@ const userPhotos = new CloudinaryStorage({
     },
 });
 
+// Set up Multer to use Cloudinary storage
+const messagePhotos = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'message_photos', // Folder in Cloudinary where files will be stored
+        allowed_formats: ['jpg', 'png', 'svg'],
+        public_id: (req, file) => file.originalname.split('.')[0], // Use the original file name
+    },
+});
+
 const uploadGroupPhoto = multer({ storage: groupPhotos });
 const uploadUserPhoto = multer({ storage: userPhotos });
+const uploadMessagePhoto = multer({ storage: messagePhotos});
 
 module.exports = {
     uploadGroupPhoto,
-    uploadUserPhoto
+    uploadUserPhoto,
+    uploadMessagePhoto
 }
