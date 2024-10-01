@@ -33,7 +33,8 @@ model User {
 
 model Message {
   id              Int               @id @default(autoincrement())
-  content         String            // This way it can either be a url for an embedded photo, or a message
+  content         String?           // Optional to allow for photos to be sent without text
+  photoUrl        String?
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
 
