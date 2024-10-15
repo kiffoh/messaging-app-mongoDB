@@ -24,10 +24,11 @@ function formatDateTime (isoString) {
 }
 
 async function createUser(req, res) {
-    const {username, password} = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
-    
     try {
+        const {username, password} = req.body;
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
         const user = await prisma.user.create({
             data: {
                 username: username,
@@ -40,21 +41,41 @@ async function createUser(req, res) {
         
         // Create JWT token
         const token = jwt.sign(
-            { id: user.id, username: user.username, bio: user.bio, createdAtDate: formattedDateTime.date, createdAtTime: formattedDateTime.time, photo: user.photo },
+            { 
+                id: user.id, 
+                username: user.username, 
+                bio: user.bio, 
+                createdAtDate: formattedDateTime.date, 
+                createdAtTime: formattedDateTime.time, 
+                photo: user.photo 
+            },
             process.env.SECRET_KEY, // Use your secret key from environment variables
             { expiresIn: '1h' } // Token expires in 1 hour
         );
 
-        res.status(201).json({ user, token }); // Return both user and token
-    } catch (err) {
-        console.log('Error creating user: ', err)
-        if (err.code === 'P2002') {
-            // Unique constraint violation
-            res.status(409).json({ error: 'Username already in use. Please try again with a different username' });
-        } else {
-            // General server error
-            res.status(500).json({ error: 'An error occurred when trying to create the user.' });
+        return res.status(201).json({ user, token }); // Return both user and token
+    } catch (error) {
+        // Handle specific error cases
+        if (error.code === 'P2002') {
+            return res.status(409).json({ 
+                status: 'error',
+                message: 'Username already in use. Please try again with a different username' 
+            });
         }
+        
+        // Handle bcrypt errors
+        if (error.name === 'HashError') {
+            return res.status(500).json({ 
+                status: 'error',
+                message: 'Error processing password' 
+            });
+        }
+
+        // General error case
+        return res.status(500).json({ 
+            status: 'error',
+            message: 'An error occurred when trying to create the user' 
+        });
     }
 }
 
@@ -179,7 +200,20 @@ async function updateUser(req, res) {
 
     } catch (error) {
         console.error("Error updating user profile:", error);
-        res.status(500).json({ error: 'An error occurred while updating the profile.' });
+        
+        // Handle specific error cases
+        if (error.code === 'P2002') {
+            return res.status(409).json({ 
+                status: 'error',
+                message: 'Username already in use. Please try again with a different username' 
+            });
+        }
+
+        // General error case
+        return res.status(500).json({ 
+            status: 'error',
+            message: 'An error occurred when trying to create the user' 
+        });
     }
 }
 
