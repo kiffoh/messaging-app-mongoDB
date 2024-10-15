@@ -169,7 +169,7 @@ async function getAllUsernames(req, res) {
 async function updateUser(req, res) {
     const {userId} = req.params;
     const {username, bio} = req.body;
-    const photo = req.file.path;
+    const photo = req.file ? req.file.path : undefined;
 
     try {
         const updatedUser = await prisma.user.update({
@@ -200,7 +200,7 @@ async function updateUser(req, res) {
 
     } catch (error) {
         console.error("Error updating user profile:", error);
-        
+
         // Handle specific error cases
         if (error.code === 'P2002') {
             return res.status(409).json({ 
