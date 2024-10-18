@@ -23,7 +23,7 @@ var server = http.createServer(app);
 // Initialize socket.io server
 const io = new Server(server, {
   cors: {
-    origin: 'https://messaging-app-client-eight.vercel.app',
+    origin: 'https://messaging-app-client-98tck00o9-kiffs-projects.vercel.app',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
   },
 });
@@ -47,7 +47,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(cors({origin: 'https://messaging-app-client-eight.vercel.app'}));
+app.use(cors({origin: 'https://messaging-app-client-98tck00o9-kiffs-projects.vercel.app'}));
 app.options('*', cors());
 
 app.use(passport.initialize());
