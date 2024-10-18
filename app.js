@@ -47,7 +47,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(cors({origin: 'http://localhost:5173'}));
+app.use(cors({origin: 'https://messaging-app-client-n5qb.vercel.app'}));
 app.options('*', cors());
 
 app.use(passport.initialize());
