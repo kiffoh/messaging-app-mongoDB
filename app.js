@@ -13,7 +13,6 @@ var http = require('http');
 
 // Environment config
 const dotenv = require('dotenv');
-const path = require('path');
 
 // Determine which .env file to load based on NODE_ENV
 const envFile = process.env.NODE_ENV ? `.env.${process.env.NODE_ENV}` : '.env';
