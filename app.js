@@ -6,10 +6,22 @@ var logger = require('morgan');
 const cors = require('cors');
 const passport = require('passport');
 require('./configuration/passportConfig');
-const { Server } = require('socket.io');
 
-// Import http and socket.io
+// Import socket.io and http
+const { Server } = require('socket.io');
 var http = require('http');
+
+// Environment config
+const dotenv = require('dotenv');
+const path = require('path');
+
+// Determine which .env file to load based on NODE_ENV
+const envFile = process.env.NODE_ENV ? `.env.${process.env.NODE_ENV}` : '.env';
+
+// Load the environment variables
+dotenv.config({ path: path.resolve(process.cwd(), envFile) });
+
+console.log(`Current environment: ${process.env.NODE_ENV || 'default'}`);
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -23,7 +35,7 @@ var server = http.createServer(app);
 // Initialize socket.io server
 const io = new Server(server, {
   cors: {
-    origin: 'https://messaging-app-client-eight.vercel.app',
+    origin: process.env.FRONTEND_URL,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
   },
 });
@@ -47,7 +59,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(cors({origin: 'https://messaging-app-client-eight.vercel.app'}));
+app.use(cors({origin: process.env.FRONTEND_URL}));
 app.options('*', cors());
 
 app.use(passport.initialize());
