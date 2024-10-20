@@ -127,7 +127,10 @@ async function createDirectMessage(req, res) {
     } catch (err) {
         // Log and respond with detailed error
         console.error('Error creating group:', err);
-        res.status(500).json({ message: err.message || 'An unknown error occurred.' });
+        res.status(500).json({ 
+            status: 'error',
+            message: err.message || 'An unknown error occurred.'
+        });
     }
 }
 
@@ -188,7 +191,10 @@ async function createGroup(req, res) {
         res.status(201).json({ newGroup });
     } catch (err) {
         console.log(err)
-        res.status(500).json({ message: 'Error creating group', error: err.message });
+        res.status(500).json({ 
+            status: 'error',
+            message: 'Error creating group'
+        });
     }
 }
 
