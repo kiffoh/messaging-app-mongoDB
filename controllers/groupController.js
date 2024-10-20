@@ -220,11 +220,11 @@ function personalisedGroupName(group, userID) {
 
 async function updateGroup(req, res) {
     const {groupId} = req.params;
-    const {username, bio} = req.body;
+    const {name, bio} = req.body;
     const photo = req.file ? req.file.path : undefined;
 
     const updateData = {};
-    if (username !== undefined) updateData.name = username;
+    if (name !== undefined) updateData.name = name;
     if (bio !== undefined) updateData.bio = bio;
     if (photo !== undefined) updateData.photo = photo;
 
@@ -254,8 +254,11 @@ async function updateGroup(req, res) {
 
         res.status(200).json(updatedGroupFormatted);
     } catch (error) {
-        console.error("Error updating group profile:", error);
-        res.status(500).json({ error: 'An error occurred while updating the profile.' });
+        console.log(err)
+        res.status(500).json({ 
+            status: 'error',
+            message: 'Error creating group'
+        });
     }
 }
 
