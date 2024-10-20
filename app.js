@@ -22,7 +22,6 @@ dotenv.config({ path: path.resolve(process.cwd(), envFile) });
 
 console.log(`Current environment: ${process.env.NODE_ENV || 'default'}`);
 
-console.log("Node env: ", process.env.NODE_ENV)
 console.log("Frontend URL: ", process.env.FRONTEND_URL)
 
 var indexRouter = require('./routes/index');
