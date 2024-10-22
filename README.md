@@ -2,7 +2,7 @@
 
 **EasyMessage** is a web application for direct and group messaging, inspired by WhatsApp. This repository contains the backend for EasyMessage, which handles API requests, database interactions, and real-time messaging features.
 
-The backend is built using Node.js and utilizes the Prisma ORM for database management. It is responsible for handling requests from the frontend, setting up and maintaining the database, and managing WebSocket connections for real-time messaging.
+The backend is built using Node.js and utilises the Prisma ORM for database management. It is responsible for handling requests from the frontend, setting up and maintaining the database, and managing WebSocket connections for real-time messaging.
 
 Key features of the backend include:
 - Serving a RESTful API for the frontend
@@ -15,7 +15,7 @@ Key features of the backend include:
 - [Running the Project](#running-the-project)
 - [API Documentation](#api-documentation)
 - [Database Schema](#database-schema)
-- [Authentication & Authorization](#authentication--authorization)
+- [Authentication & Authorisation](#authentication--authorisation)
 - [Testing](#testing)
 - [Deployment](#deployment)
 - [Contributing](#contributing)
@@ -190,7 +190,7 @@ Manages both group chats and direct messages between users.
 
 #### Indexes
 - Combined index on `[updatedAt, createdAt]`
-  - Optimizes queries for recent activity and chat history
+  - Optimises queries for recent activity and chat history
 
 ## Key Features
 - **Direct Messages**: Implemented through the Group model with `directMsg` flag
@@ -238,14 +238,14 @@ JWT payload includes:
     - Token expires in 1 hour
 
 2. **Token Configuration**:
-  - Expiration: 1 hour
-  - Signing algorithm: HS256
-  - Token must be included in Authorization header for protected routes
+    - Expiration: 1 hour
+    - Signing algorithm: HS256
+    - Token must be included in Authorization header for protected routes
 
 3. **Error Handling**:
-  - Invalid credentials return 400 Bad Request
-  - Server errors return 500 Internal Server Error
-  - Detailed error messages for debugging
+    - Invalid credentials return 400 Bad Request
+    - Server errors return 500 Internal Server Error
+    - Detailed error messages for debugging
 
 ## Protected Routes
 All protected routes require:
