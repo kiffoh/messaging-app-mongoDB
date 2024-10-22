@@ -5,6 +5,8 @@
   "scripts": {
     "start": "cross-env NODE_ENV=production node ./bin/www",
     "dev": "cross-env NODE_ENV=development nodemon ./bin/www",
+    "migrate:dev": "cross-env DATABASE_URL=development-url npx prisma migrate dev",
+    "migrate:prod": "cross-env DATABASE_URL=production-url npx prisma migrate dev",
     "test": "jest"
   },
   "dependencies": {
