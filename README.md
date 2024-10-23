@@ -1,21 +1,21 @@
 # **EasyMessage - Messaging App (Backend)**
 
-**EasyMessage** is a web application for direct and group messaging, inspired by WhatsApp. This project is one of the penultimate project in the Odin Project[https://www.theodinproject.com/lessons/nodejs-messaging-app], and as part of the learning process, I have reinforced my knowledge on authentification, media-sharing whilst developing knowledge for real time server-client updates.
+**EasyMessage** is a web application for direct and group messaging, inspired by WhatsApp. This project is one of the final projects in the [Odin Project](https://www.theodinproject.com/lessons/nodejs-messaging-app). As part of the learning process, I have reinforced my knowledge on authentification, media-sharing whilst enhancing my skills in real-time server-client communication.
 
 
-The backend is built using Node.js and utilises the Prisma ORM for database management. It is responsible for handling requests from the frontend (RESTful API), setting up and maintaining the database, and managing WebSocket connections for real-time messaging.
+The backend is built using Node.js and utilises the Prisma ORM for database management. It is responsible for handling requests from the frontend (RESTful API), setting up and maintaining the database, and managing Socket.IO connections for real-time messaging.
 
 ### Core Features
 
 - 🔐 **Secure Authentication**: JWT-based user authentication
-- 💬 **Real-time Messaging**: Instant message delivery using WebSocket
+- 💬 **Real-time Messaging**: Instant message delivery using Socket.IO
 - 👥 **Group Chats**: Support for multiple users in conversations
 - 📸 **Media Sharing**: Image upload and sharing capabilities
 - 👤 **User Profiles**: Customisable user profiles with avatars
 - 📱 **Direct Messages**: One-to-one private conversations
 
 # Quick Start
-The website is live on [https://messaging-app-client-eight.vercel.app/]. Log in with the provided credentials to explore the features of the full-stack application:
+[The website is live](https://messaging-app-client-eight.vercel.app/). Log in with the demo credentials to explore the features of the full-stack application:
 - **username**: guest
 - **password**: iamaguest
 
@@ -40,8 +40,6 @@ The website is live on [https://messaging-app-client-eight.vercel.app/]. Log in 
 - [Authentication and Authorisation](#authentication-and-authorisation)
 - [Testing](#testing)
 - [Deployment](#deployment)
-- [Contributing](#contributing)
-- [License](#license)
 
 # **Installation**
 ### **Prerequisites**
@@ -791,13 +789,13 @@ SECRET_KEY=your_jwt_secret_key
 
 ### Error Responses
 - Invalid Credentials:
-```bash
+```json
 {
   "message": "Invalid username or password."
 }
 ```
 - Successful Login:
-```bash
+```json
 {
   "token": "jwt_token_string",
   "message": "Login successful"
@@ -805,7 +803,7 @@ SECRET_KEY=your_jwt_secret_key
 ```
 
 # Testing
-This project uses [Jest](https://jestjs.io/) as the testing framework. The tests primarily focus on the functionality of group and user deletion, ensuring the correct cascading behavior for related data such as messages, message receipts, and group memberships.
+This project uses [Jest](https://jestjs.io/) as the testing framework. The tests primarily focus on the functionality of group and user deletion, ensuring the correct cascading behavior for related data such as messages, and group memberships.
 
 ### Running Tests
 
@@ -832,5 +830,28 @@ The following cases are covered:
 - **Environment setup**: Ensure your .env.test or equivalent testing environment is properly configured before running the tests.
 - **Post-test cleanup**: The afterAll() hook in the test files ensures the database connection is properly closed after the tests run.
 
-# Deployment
-I have deployed the backend code on render and used neon for the production database. Once these are online I have uploaded my environment variables to the render and redeployed for successful deployment.
+## Deployment
+
+### Backend Deployment
+- **Platform**: Render
+  - The backend code is deployed on Render. 
+  - Ensure that your application is configured to use the correct environment variables.
+
+### Database
+- **Production Database**: Neon
+  - The production database is hosted on Neon. Make sure to set up the database correctly and include any necessary connection strings in your environment variables.
+
+### Environment Variables
+- After deploying the application, upload the following environment variables to Render:
+  - `DATABASE_URL`: The connection string for the Neon database.
+  - Other variables as necessary for your application (e.g., API keys, secret keys, etc.)
+
+### Redeployment
+- To redeploy after changing environment variables or code, follow these steps:
+  1. Navigate to your Render dashboard.
+  2. Click on your service.
+  3. Click the "Redeploy" button to apply the changes.
+
+### Additional Notes
+- Ensure you have configured any necessary CORS settings for your backend to allow communication with the frontend.
+- Monitor your logs on Render for any errors that might occur after deployment.
