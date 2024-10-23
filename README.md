@@ -1,11 +1,9 @@
 # **EasyMessage - Messaging App (Backend)**
 
-**EasyMessage** is a web application for direct and group messaging, inspired by WhatsApp. The backend is built using Node.js and utilises the Prisma ORM for database management. It is responsible for handling requests from the frontend, setting up and maintaining the database, and managing WebSocket connections for real-time messaging.
+**EasyMessage** is a web application for direct and group messaging, inspired by WhatsApp. This project is one of the penultimate project in the Odin Project[https://www.theodinproject.com/lessons/nodejs-messaging-app], and as part of the learning process, I have reinforced my knowledge on authentification, media-sharing whilst developing knowledge for real time server-client updates.
 
-Key features of the backend include:
-- Serving a RESTful API for the frontend
-- Managing user data and messages via the Prisma ORM
-- Supporting real-time communication with WebSockets for direct and group messaging
+
+The backend is built using Node.js and utilises the Prisma ORM for database management. It is responsible for handling requests from the frontend (RESTful API), setting up and maintaining the database, and managing WebSocket connections for real-time messaging.
 
 ### Core Features
 
@@ -135,8 +133,75 @@ To run with debug logs:
 DEBUG=easymessage:* npm run dev
 ```
 
-# **API Documentation**
-Come back to this
+# API Documentation
+
+This document outlines all available endpoints in the application. The API is organized into four main sections:
+- Base Routes
+- Users
+- Groups
+- Messages
+
+### Request Formats
+- For file uploads: `multipart/form-data`
+- For all other requests: `application/json`
+
+## User Routes
+`POST /users/signup`
+- Description: Creates a new user.
+- Request Body:
+``` bash
+{
+  "username": "johndoe",
+  "password": "password123"
+}
+```
+- Response:
+    - Success: Returns the created user object.
+    - Error: Validation errors or signup issues.
+
+`POST /users/login`
+- Description: Logs in an existing user.
+- Request Body:
+```bash
+{
+  "username": "johndoe",
+  "password": "password123"
+}
+```
+- Response:
+    - Success: Returns a token and user details.
+    - Error: Incorrect username or password.
+
+`GET /users/:userId/profile`
+- Description: Fetches the profile information of a user by userId.
+- Response:
+    - Success: User's profile data (e.g., username, bio, photo).
+    - Error: User not found
+
+`PUT /users/:userId/profile`
+- Description: Updates the profile of a user, including uploading a profile photo.
+- Request Body:
+    - Multipart form data for profile photo and other user details.
+- Response:
+    - Success: Updated user profile.
+    - Error: Validation errors or failure to upload photo.
+
+`DELETE /users/:userId/profile`
+- Description: Deletes a user profile by userId.
+- Response:
+    - Success: User deleted successfully.
+    - Error: User not found or other deletion issues.
+
+`GET /users/usernames`
+- Description: Retrieves all usernames in the system.
+- Response: Array of all usernames.
+
+`PUT /users/:userId/update-contacts`
+- Description: Updates the user's contact list.
+- Request Body: An array of user IDs to be added to the contact list.
+- Response:
+    - Success: Contacts updated.
+    - Error: Invalid user or update failed.
 
 
 # **Database Schema**
