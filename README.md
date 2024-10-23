@@ -1,15 +1,13 @@
 # **EasyMessage - Messaging App (Backend)**
 
-**EasyMessage** is a web application for direct and group messaging, inspired by WhatsApp. This repository contains the backend for EasyMessage, which handles API requests, database interactions, and real-time messaging features.
-
-The backend is built using Node.js and utilises the Prisma ORM for database management. It is responsible for handling requests from the frontend, setting up and maintaining the database, and managing WebSocket connections for real-time messaging.
+**EasyMessage** is a web application for direct and group messaging, inspired by WhatsApp. The backend is built using Node.js and utilises the Prisma ORM for database management. It is responsible for handling requests from the frontend, setting up and maintaining the database, and managing WebSocket connections for real-time messaging.
 
 Key features of the backend include:
 - Serving a RESTful API for the frontend
 - Managing user data and messages via the Prisma ORM
 - Supporting real-time communication with WebSockets for direct and group messaging
 
-## Core Features
+### Core Features
 
 - 🔐 **Secure Authentication**: JWT-based user authentication
 - 💬 **Real-time Messaging**: Instant message delivery using WebSocket
@@ -75,11 +73,9 @@ This will install all necessary dependencies, including:
 - And more...
 
 # **Environment Setup**
-
-### Environment Variables
 To set up your environment, create a `.env` file in the root directory of your project. This file should contain the following required environment variables, along with descriptions for each:
 
-#### Server Configuration
+### Server Configuration
 - **NODE_ENV**: Set to `development` or `production` to specify the environment.
 - **SECRET_KEY**: Secret key for signing tokens
 - **FRONTEND_URL**: URL for your frontend application
