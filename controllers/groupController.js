@@ -288,21 +288,12 @@ async function deleteGroup(req, res) {
         if (userIsAdmin) {
             // Perform the delete
             await prisma.$transaction(async (prisma) => {
-                // Step 1: Delete related message receipts
-                await prisma.messageReceipt.deleteMany({
-                where: {
-                    message: {
-                        groupId: groupID,
-                    },
-                },
-                });
-        
-                // Step 2: Delete related messages
+                // Step 1: Delete related messages
                 await prisma.message.deleteMany({
                 where: { groupId: groupID },
                 });
         
-                // Step 3: Delete the group itself
+                // Step 2: Delete the group itself
                 await prisma.group.delete({
                 where: { id: groupID },
                 });

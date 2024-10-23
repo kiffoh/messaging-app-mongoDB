@@ -264,16 +264,7 @@ async function deleteUser(req, res) {
         if (!user) return res.status(404).json({ message: 'User not found.' });
 
         // Perform the delete
-        await prisma.$transaction(async (prisma) => {
-            // Delete related message receipts
-            await prisma.messageReceipt.deleteMany({
-              where: {
-                message: {
-                  authorId: userID,
-                },
-              },
-            });
-    
+        await prisma.$transaction(async (prisma) => {   
              // Delete the user
             await prisma.user.delete({
                 where: {

@@ -144,16 +144,7 @@ async function deleteMessage(req, res, next, io) {
         if (!message) return res.status(404).json({ message: 'Message not found.' });
 
         // Perform the delete
-        await prisma.$transaction(async (prisma) => {
-            // Delete related message receipts
-            await prisma.messageReceipt.deleteMany({
-              where: {
-                message: {
-                  id: messageID,
-                },
-              },
-            });
-    
+        await prisma.$transaction(async (prisma) => {  
             // Delete the message
             await prisma.message.delete({
                 where: {

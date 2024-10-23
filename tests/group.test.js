@@ -42,21 +42,12 @@ describe("Group Deletion", () => {
 
     // Perform the delete
     await prisma.$transaction(async (prisma) => {
-      // Step 1: Delete related message receipts
-      await prisma.messageReceipt.deleteMany({
-        where: {
-          message: {
-            groupId: groupId,
-          },
-        },
-      });
-
-      // Step 2: Delete related messages
+      // Step 1: Delete related messages
       await prisma.message.deleteMany({
         where: { groupId: groupId },
       });
 
-      // Step 3: Delete the group itself
+      // Step 2: Delete the group itself
       await prisma.group.delete({
         where: { id: groupId },
       });
@@ -153,15 +144,6 @@ describe("User Deletion", () => {
 
     // Perform the delete
     await prisma.$transaction(async (prisma) => {
-        // Step 1: Delete related message receipts
-        await prisma.messageReceipt.deleteMany({
-          where: {
-            message: {
-              authorId: user3.id,
-            },
-          },
-        });
-
         const deletedUser = await prisma.user.delete({
             where: {
                 id: user3.id
