@@ -20,8 +20,8 @@ Key features of the backend include:
 
 # Quick Start
 The website is live on [https://messaging-app-client-eight.vercel.app/](). Use the credentials to explore the features of the full-stack application:
-username: guest
-password: iamaguest
+- **username**: guest
+- **password**: iamaguest
 
 ## Technology Stack
 
@@ -70,6 +70,8 @@ This will install all necessary dependencies, including:
 - **Passport.js** (for authentication)
 - **jsonwebtoken** (for JWT-based authorization)
 - **socket.io** (for real-time communication)
+- **multer** (for file-uploads)
+- **cloudinary api** (for online-storage)
 - And more...
 
 # **Environment Setup**
@@ -147,6 +149,7 @@ Come back to this
 
 
 # **Database Schema**
+The schema is implemented using Prisma with PostgreSQL as the database provider.
 
 To apply the database schema migrations, run the following command:
 ```bash
@@ -163,11 +166,6 @@ Alternatively, you can use the commands defined in the package.json, which allow
 - **Environment-specific migrations**: Ensure that you set the `NODE_ENV` to either `development` or `production` before running the migration commands.
 - **Windows users**: You must use `cross-env` to set environment variables, as shown in the `package.json` commands.
 - **macOS/Linux users**: You can remove `cross-env` from the commands, as environment variables can be set directly in the terminal.
-
-# Database Schema Documentation
-
-## Overview
-This document outlines the database schema for EasyMessage, a messaging platform that supports both direct messages and group chats. The schema is implemented using Prisma with PostgreSQL as the database provider.
 
 ## Models
 
@@ -236,7 +234,7 @@ Manages both group chats and direct messages between users.
 - Combined index on `[updatedAt, createdAt]`
   - Optimises queries for recent activity and chat history
 
-## Key Features
+### Key Features
 - **Direct Messages**: Implemented through the Group model with `directMsg` flag
 - **Group Chats**: Full support for multi-user conversations
 - **Admin Controls**: Separate tracking of group administrators
@@ -244,7 +242,7 @@ Manages both group chats and direct messages between users.
 - **Media Support**: Handles both text and image messages
 - **Soft Deletion**: Messages persist even if users are deleted
 
-## Notes
+### Notes
 - The schema supports both one-on-one and group messaging through a unified Group model
 - User photos default to a Cloudinary-hosted image
 - Messages can contain text, images, or both
@@ -252,18 +250,16 @@ Manages both group chats and direct messages between users.
 
 
 # Authentication and Authorisation
-
-## Overview
 The application uses JSON Web Tokens (JWT) for stateless authentication, implemented through Passport.js with a Local Strategy for credential verification. User passwords are securely hashed using bcrypt before storage.
 
 ## Authentication Implementation
 - **Strategy**: Passport Local Strategy (stateless)
 - **Token Type**: JSON Web Tokens (JWT)
 - **Password Security**: 
- - Passwords are hashed using bcrypt
- - Passwords are never stored in plain text
+    - Passwords are hashed using bcrypt
+    - Passwords are never stored in plain text
 
-## Token Structure
+### Token Structure
 JWT payload includes:
 - `id`: User's unique identifier
 - `username`: User's username
@@ -282,16 +278,16 @@ JWT payload includes:
     - Token expires in 1 hour
 
 2. **Token Configuration**:
-    - Expiration: 1 hour
-    - Signing algorithm: HS256
-    - Token must be included in Authorization header for protected routes
+- Expiration: 1 hour
+- Signing algorithm: HS256
+- Token must be included in Authorization header for protected routes
 
 3. **Error Handling**:
-    - Invalid credentials return 400 Bad Request
-    - Server errors return 500 Internal Server Error
-    - Detailed error messages for debugging
+- Invalid credentials return 400 Bad Request
+- Server errors return 500 Internal Server Error
+- Detailed error messages for debugging
 
-## Protected Routes
+### Protected Routes
 All protected routes require:
 ```http
 Authorization: Bearer <jwt_token>
@@ -304,12 +300,12 @@ Authorization: Bearer <jwt_token>
 - Token expiration for security
 - Error logging for authentication failures
 
-## Environment Variables Required
+### Environment Variables Required
 ```env
 SECRET_KEY=your_jwt_secret_key
 ```
 
-## Error Responses
+### Error Responses
 - Invalid Credentials:
 ```bash
 {
@@ -338,7 +334,7 @@ SECRET_KEY=your_jwt_secret_key
 # Testing
 This project uses [Jest](https://jestjs.io/) as the testing framework. The tests primarily focus on the functionality of group and user deletion, ensuring the correct cascading behavior for related data such as messages, message receipts, and group memberships.
 
-## Running Tests
+### Running Tests
 
 To run the test suite, execute the following command:
 
@@ -346,13 +342,13 @@ To run the test suite, execute the following command:
 npm test
 ```
 
-## Group Deletion Tests
+### Group Deletion Tests
 - **Test Description**: These tests verify that when a group is deleted, all associated data such as messages and message receipts are correctly removed, and users are disconnected from the group.
 The following cases are covered:
 - The group and its related data (messages, message receipts) should be deleted.
 - Users should be disconnected from the group as members or admins.
 
-## User Deletion Tests
+### User Deletion Tests
 - **Test Description**: These tests verify that when a user is deleted, the associated group data is updated accordingly, including checking that the user is no longer a member or admin of any group, and their direct messages (DMs) and related receipts are properly handled.
 The following cases are covered:
 - The user is successfully deleted.
