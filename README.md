@@ -136,7 +136,6 @@ DEBUG=easymessage:* npm run dev
 # API Documentation
 
 This document outlines all available endpoints in the application. The API is organized into four main sections:
-- Base Routes
 - Users
 - Groups
 - Messages
@@ -146,63 +145,498 @@ This document outlines all available endpoints in the application. The API is or
 - For all other requests: `application/json`
 
 ## User Routes
+### Create User
 `POST /users/signup`
-- Description: Creates a new user.
-- Request Body:
-``` bash
+- **Description**: Creates a new user account
+- **Request Body**:
+```json
 {
-  "username": "johndoe",
-  "password": "password123"
+    "username": "johndoe",
+    "password": "password123"
 }
 ```
-- Response:
-    - Success: Returns the created user object.
-    - Error: Validation errors or signup issues.
+- **Response:**
+    - **Success (201):**
+    ```json
+    {
+        "user": {
+            "id": 1,
+            "username": "johndoe",
+            "bio": null,
+            "createdAt": "..."
+        },
+        "token": "jwt-token-string"
+    }
+    ```
+    - **Error (409)** - Username exists: 
+    ```json
+    {
+        "status": "error",
+        "message": "Username already in use. Please try again with a different username"
+    }
+    ```
+    - **Error (500)** - Server error:
+    ```json
+    {
+        "status": "error",
+        "message": "An error occurred when trying to create the user"
+    }
+    ```
 
+### Login User
 `POST /users/login`
-- Description: Logs in an existing user.
-- Request Body:
-```bash
+- **Description:** Authenticates a user and provides a JWT token
+- **Request Body:**
+```json
 {
   "username": "johndoe",
   "password": "password123"
 }
 ```
-- Response:
-    - Success: Returns a token and user details.
-    - Error: Incorrect username or password.
+- **Response:**
+    - **Success (200):** 
+    ```json
+    {
+        "token": "jwt-token-string",
+        "message": "Login successful"
+    }
+    ```
+    - **Error (400):**
+    ```json
+    {
+        "message": "Invalid username or password."
+    }
+    ```
 
+### Get User Profile
 `GET /users/:userId/profile`
-- Description: Fetches the profile information of a user by userId.
-- Response:
-    - Success: User's profile data (e.g., username, bio, photo).
-    - Error: User not found
-
+- **Description:** Fetches the profile information of a user by userId.
+- **URL Parameters:**
+    - `userId`: User's unique identifier (number)
+- **Response:**
+    - **Success (200):** 
+    ```json
+    {
+        "id": 1,
+        "username": "johndoe",
+        "bio": "User bio",
+        "photo": "photo/path",
+        "createdAtDate": "23-10-2024",
+        "createdAtTime": "14:30",
+        "contacts": []
+    }
+    ```
+    - **Error (404):**
+    ```json
+    {
+        "message": "User not found"
+    }
+    ```
+    
+### Update User Profile    
 `PUT /users/:userId/profile`
-- Description: Updates the profile of a user, including uploading a profile photo.
-- Request Body:
-    - Multipart form data for profile photo and other user details.
-- Response:
-    - Success: Updated user profile.
-    - Error: Validation errors or failure to upload photo.
+- **Description:** Updates the profile of a user, including uploading a profile photo.
+- **Content-Type**: `multipart/form-data` for profile photo and other user details.
+- **URL Parameters:**
+    - `userId`: User's unique identifier (number)
+- **Request Body:**
+    - `username` (optional): New username
+    - `bio` (optional): User biography
+    - `photo` (optional): Profile photo file
+- **Response:**
+    - **Success (200):** Returns updated user object with contacts
+    - **Error (409):** - Username exists:
+    ```json
+    {
+        "status": "error",
+        "message": "Username already in use. Please try again with a different username"
+    }
+    ```
 
+### Delete User Profile
 `DELETE /users/:userId/profile`
-- Description: Deletes a user profile by userId.
-- Response:
-    - Success: User deleted successfully.
-    - Error: User not found or other deletion issues.
+- **Description:** Deletes user account and related data
+- **URL Parameters:**
+    - `userId`: User's unique identifier (number)
+- **Response:**
+    - **Success (200):**
+    ```json
+    {
+        "message": "User successfully deleted."
+    }
+    ```
+    - **Error (404):** 
+    ```json
+    {
+        "message": "User not found."
+    }
+    ```
 
+### Get All Usernames
 `GET /users/usernames`
-- Description: Retrieves all usernames in the system.
-- Response: Array of all usernames.
+- **Description:** Retrieves all usernames and basic user information
+- **Response:**
+    - **Success (200):**
+    ```json
+    [
+        {
+            "id": 1,
+            "username": "johndoe",
+            "photo": "photo/path"
+        }
+    ]
+    ```
+    - **Error (404):**
+    ```json
+    {
+        "message": "No users found."
+    }
+    ```
 
+### Update User Contacts
 `PUT /users/:userId/update-contacts`
-- Description: Updates the user's contact list.
-- Request Body: An array of user IDs to be added to the contact list.
-- Response:
-    - Success: Contacts updated.
-    - Error: Invalid user or update failed.
+- **Description:** Updates the user's contact list.
+- **URL Parameters:**
+    - `userId`: User's unique identifier (number)
+- **Request Body:** An array of user IDs to be added to the contact list.
+```json
+{
+  "selectedContacts": [1, 2, 3]  // Array of user IDs
+}
+```
+- **Response:**
+    - **Success (200):** Returns updated user object with contacts
+    - **Error (500):** 
+    ```json
+    {
+        "message": "An unknown error occurred when trying to update the user's contacts."
+    }
+    ```
 
+## Message Routes
+
+### Get Messages
+`GET /messages/:userId`
+- **Description**: Retrieves all messages for a specific user
+- **URL Parameters:**
+    - `userId`: User's unique identifier (number)
+- **Response:**
+    - **Success (200):**
+    ```json
+    {
+        "messages": [
+            {
+                "id": 1,
+                "content": "Hello world!",
+                "senderId": 123,
+                "chatId": 456,
+                "photoUrl": "photo/path",
+                "createdAt": "2024-03-21T10:30:00Z",
+                "updatedAt": "2024-03-21T10:30:00Z"
+            }
+        ]
+    }
+    ```
+    - **Error (500):**
+    ```json
+    {
+        "message": "An unknown error occurred when trying to retrieve messages."
+    }
+    ```
+
+### Create Message
+`POST /messages/:chatId`
+- **Description:** Creates a new message in a specific chat
+- **Content-Type**: `multipart/form-data` for message with photo
+- **URL Parameters:**
+    - `chatId`: Chat's unique identifier (number)
+- **Request Body:**
+    - `content`: Message text
+    - `photoUrl` (optional): Message photo file
+- **Response:**
+    - **Success (201):**
+    ```json
+    {
+        "message": {
+            "id": 2,
+            "content": "Hello everyone!",
+            "senderId": 123,
+            "chatId": 456,
+            "photoUrl": "photos/message123.jpg",
+            "createdAt": "2024-03-21T10:35:00Z"
+        }
+    }
+    ```
+    - **Error (500):**
+    ```json
+    {
+        "message": "An unknown error occurred when trying to create the message."
+    }
+    ```
+
+### Update Message
+`PUT /messages/:chatId/:messageId`
+- **Description:** Updates an existing message
+- **URL Parameters:**
+    - `chatId`: Chat's unique identifier (number)
+    - `messageId`: Message's unique identifier (number)
+- **Request Body:**
+```json
+{
+    "content": "Updated message content"
+}
+```
+- **Response:**
+    - **Success (200):**
+    ```json
+    {
+        "message": {
+            "id": 2,
+            "content": "Updated message content",
+            "senderId": 123,
+            "chatId": 456,
+            "photoUrl": "photos/message123.jpg",
+            "createdAt": "2024-03-21T10:35:00Z",
+            "updatedAt": "2024-03-21T10:40:00Z"
+        }
+    }
+    ```
+    - **Error (500):**
+    ```json
+    {
+        "message": "An unknown error occurred when trying to update the message."
+    }
+    ```
+
+### Delete Message
+`DELETE /messages/:chatId/:messageId`
+- **Description:** Deletes a specific message
+- **URL Parameters:**
+    - `chatId`: Chat's unique identifier (number)
+    - `messageId`: Message's unique identifier (number)
+- **Response:**
+    - **Success (200):**
+    ```json
+    {
+        "message": "Message successfully deleted"
+    }
+    ```
+    - **Error (500):**
+    ```json
+    {
+        "message": "An unknown error occurred when trying to delete the message."
+    }
+    ```
+
+## Group Routes
+
+### Get Group Profile
+`GET /groups/:groupId/profile`
+- **Description:** Retrieves information about a specific group
+- **URL Parameters:**
+    - `groupId`: Group's unique identifier (number)
+- **Response:**
+    - **Success (200):**
+    ```json
+    {
+        "id": 789,
+        "name": "Project Team",
+        "photo": "photos/group789.jpg",
+        "bio": "Team collaboration group",
+        "createdAtDate": "21-03-2024",
+        "createdAtTime": "10:30",
+        "members": [
+            {
+                "id": 123,
+                "username": "john_doe"
+            }
+        ],
+        "admins": [
+            {
+                "id": 123,
+                "username": "john_doe"
+            }
+        ]
+    }
+    ```
+    - **Error (404):**
+    ```json
+    {
+        "message": "Group not found."
+    }
+    ```
+    - **Error (400):**
+    ```json
+    {
+        "message": "Invalid group ID."
+    }
+    ```
+
+### Update Group Profile
+`PUT /groups/:groupId/profile`
+- **Description:** Updates a group's profile information
+- **Content-Type**: `multipart/form-data` for group photo
+- **URL Parameters:**
+    - `groupId`: Group's unique identifier (number)
+- **Request Body:**
+    - `name` (optional): Group name
+    - `bio` (optional): Group description
+    - `photo` (optional): Group photo file
+- **Response:**
+    - **Success (200):**
+    ```json
+    {
+        "id": 789,
+        "name": "Updated Project Team",
+        "photo": "photos/group789_updated.jpg",
+        "bio": "Our awesome team collaboration group",
+        "createdAtDate": "21-03-2024",
+        "createdAtTime": "10:30"
+    }
+    ```
+    - **Error (400)** - Validation errors:
+    ```json
+    {
+        "status": "error",
+        "errors": [
+            {
+                "field": "name",
+                "message": "Group name is required"
+            }
+        ]
+    }
+    ```
+
+### Delete Group
+`DELETE /groups/:groupId/profile`
+- **Description:** Deletes a specific group
+- **URL Parameters:**
+    - `groupId`: Group's unique identifier (number)
+- **Headers:**
+    - `user-id`: ID of the user attempting to delete (number)
+- **Response:**
+    - **Success (200):**
+    ```json
+    {
+        "message": "Group successfully deleted."
+    }
+    ```
+    - **Error (403):**
+    ```json
+    {
+        "message": "User does not have admin privileges to delete this group."
+    }
+    ```
+    - **Error (404):**
+    ```json
+    {
+        "message": "Group not found."
+    }
+    ```
+
+### Create Direct Message
+`POST /groups/createDirectMessage`
+- **Description:** Creates a new direct message group between users
+- **Request Body:**
+```json
+{
+    "members": [
+        {"id": 123, "username": "john_doe"},
+        {"id": 456, "username": "jane_smith"}
+    ]
+}
+```
+- **Response:**
+    - **Success (201):**
+    ```json
+    {
+        "newGroup": {
+            "id": 790,
+            "name": "jane_smith",
+            "photo": "photos/default.jpg",
+            "directMsg": true,
+            "members": [
+                {
+                    "id": 123,
+                    "username": "john_doe"
+                },
+                {
+                    "id": 456,
+                    "username": "jane_smith"
+                }
+            ],
+            "messages": []
+        }
+    }
+    ```
+    - **Error (400):**
+    ```json
+    {
+        "message": "Group must have at least one member."
+    }
+    ```
+
+### Create Group
+`POST /groups/createGroup`
+- **Description:** Creates a new group chat
+- **Content-Type**: `multipart/form-data` for group photo
+- **Request Body:**
+    - `name` (optional): Group name
+    - `members`: JSON string of member objects
+    - `groupPhoto` (optional): Group photo file
+- **Response:**
+    - **Success (201):**
+    ```json
+    {
+        "newGroup": {
+            "id": 791,
+            "name": "Project Team",
+            "photo": "photos/group791.jpg",
+            "directMsg": false,
+            "members": [
+                {
+                    "id": 123,
+                    "username": "john_doe"
+                },
+                {
+                    "id": 456,
+                    "username": "jane_smith"
+                }
+            ],
+            "messages": [],
+            "admins": [
+                {
+                    "id": 123,
+                    "username": "john_doe"
+                }
+            ]
+        }
+    }
+    ```
+    - **Error (400)** - Validation errors:
+    ```json
+    {
+        "status": "error",
+        "errors": [
+            {
+                "field": "members",
+                "message": "Members array is required"
+            }
+        ]
+    }
+    ```
+
+## Notes
+- All routes utilize Socket.IO for real-time updates
+- Dates are formatted as "DD-MM-YYYY" and times as "HH:MM" in UTC
+- Photo uploads are handled through Multer
+- Direct message groups automatically generate names based on participants
+
+## Error Responses
+All endpoints may return these common errors:
+
+- **500 Internal Server Error:** When an unexpected error occurs
+- **400 Bad Request:** When request validation fails
 
 # **Database Schema**
 The schema is implemented using Prisma with PostgreSQL as the database provider.
