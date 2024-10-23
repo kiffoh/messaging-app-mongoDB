@@ -76,10 +76,10 @@ This will install all necessary dependencies, including:
 
 # **Environment Setup**
 
-## Environment Variables
+### Environment Variables
 To set up your environment, create a `.env` file in the root directory of your project. This file should contain the following required environment variables, along with descriptions for each:
 
-### Server Configuration
+#### Server Configuration
 - **NODE_ENV**: Set to `development` or `production` to specify the environment.
 - **SECRET_KEY**: Secret key for signing tokens
 - **FRONTEND_URL**: URL for your frontend application
@@ -132,11 +132,6 @@ npm start
 ### Notes
 - The cross-env package is included in the above commands. If you are using macOS or Linux, you can remove cross-env from the package.json scripts, as it is only necessary for Windows users.
 - Ensure that you have all environment variables set up correctly before starting the servers.
-
-### Development Mode Features
-- Hot reloading enabled
-- Detailed error logging
-- Development-specific middleware
 
 ### Debugging
 To run with debug logs:
@@ -268,7 +263,7 @@ JWT payload includes:
 - `createdAtTime`: Formatted time of account creation
 - `photo`: URL to user's profile photo
 
-## Authentication Flow
+### Authentication Flow
 1. **Login Process**:
   - User submits username and password
   - Credentials are validated against database
@@ -286,12 +281,6 @@ JWT payload includes:
 - Invalid credentials return 400 Bad Request
 - Server errors return 500 Internal Server Error
 - Detailed error messages for debugging
-
-### Protected Routes
-All protected routes require:
-```http
-Authorization: Bearer <jwt_token>
-```
 
 ## Security Measures
 - Stateless authentication using JWT
@@ -319,17 +308,6 @@ SECRET_KEY=your_jwt_secret_key
   "message": "Login successful"
 }
 ```
-
-## Authorisation Rules
-1. Token Verification
-    - All protected routes verify JWT validity
-    - Expired tokens are rejected
-    - Invalid signatures are rejected
-2. User Access Control:
-    - Users can only access their own resources
-    - Token payload determines user context
-    - Resource ownership is verified server-side
-
 
 # Testing
 This project uses [Jest](https://jestjs.io/) as the testing framework. The tests primarily focus on the functionality of group and user deletion, ensuring the correct cascading behavior for related data such as messages, message receipts, and group memberships.
