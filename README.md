@@ -9,13 +9,39 @@ Key features of the backend include:
 - Managing user data and messages via the Prisma ORM
 - Supporting real-time communication with WebSockets for direct and group messaging
 
+## Core Features
+
+- 🔐 **Secure Authentication**: JWT-based user authentication
+- 💬 **Real-time Messaging**: Instant message delivery using WebSocket
+- 👥 **Group Chats**: Support for multiple users in conversations
+- 📸 **Media Sharing**: Image upload and sharing capabilities
+- 👤 **User Profiles**: Customisable user profiles with avatars
+- 📱 **Direct Messages**: One-to-one private conversations
+
+# Quick Start
+The website is live on [https://messaging-app-client-eight.vercel.app/](). Use the credentials to explore the features of the full-stack application:
+username: guest
+password: iamaguest
+
+## Technology Stack
+
+- **Runtime**: Node.js (v16+)
+- **Framework**: Express.js
+- **Database**: PostgreSQL
+- **ORM**: Prisma
+- **Authentication**: Passport.js, JWT
+- **Real-time Communication**: Socket.IO
+- **File Upload**: Multer, Cloudinary
+- **Testing**: Jest
+
+
 # **Table of Contents**
 - [Installation](#installation)
 - [Environment Setup](#environment-setup)
 - [Running the Project](#running-the-project)
 - [API Documentation](#api-documentation)
 - [Database Schema](#database-schema)
-- [Authentication & Authorisation](#authentication--authorisation)
+- [Authentication and Authorisation](#authentication-and-authorisation)
 - [Testing](#testing)
 - [Deployment](#deployment)
 - [Contributing](#contributing)
@@ -51,20 +77,27 @@ This will install all necessary dependencies, including:
 ## Environment Variables
 To set up your environment, create a `.env` file in the root directory of your project. This file should contain the following required environment variables, along with descriptions for each:
 
+### Server Configuration
 - **NODE_ENV**: Set to `development` or `production` to specify the environment.
-- **DATABASE_URL**: Connection string for your database.
-- **FRONTEND_URL**: URL for your frontend application.
-- **SECRET_KEY**: A secret key used for signing tokens.
-- **DEFAULT_PICTURE**: Relative/Online URL to the default profile picture.
-- **DEFAULT_GROUP_PICTURE**: Relative/Online URL to the default group picture.
-- **CLOUDINARY_URL**: Cloudinary URL for media uploads.
-- **CLOUDINARY_API_KEY**: Cloudinary API key.
-- **CLOUDINARY_API_SECRET**: Cloudinary API secret.
-- **CLOUDINARY_CLOUD_NAME**: Cloudinary cloud name.
+- **SECRET_KEY**: Secret key for signing tokens
+- **FRONTEND_URL**: URL for your frontend application
+
+### Database Configuration
+- **DATABASE_URL**: Connection string for your database
+
+### Media Storage
+- **CLOUDINARY_URL**: Cloudinary URL for media uploads
+- **CLOUDINARY_API_KEY**: Cloudinary API key
+- **CLOUDINARY_API_SECRET**: Cloudinary API secret
+- **CLOUDINARY_CLOUD_NAME**: Cloudinary cloud name
+
+### Default Assets
+- **DEFAULT_PICTURE**: Default profile picture URL
+- **DEFAULT_GROUP_PICTURE**: Default group picture URL
 
 If you want to have separate environment files for production and development, you can create `.env.production` and `.env.development`. You will also need to set the `NODE_ENV` variable in the command line or use the `cross-env` package (already a dependency) for Windows users. 
 
-### Example `.env` File
+### Example `.env.development` File
 ```bash
 NODE_ENV=development
 DATABASE_URL=database-url
@@ -97,6 +130,17 @@ npm start
 ### Notes
 - The cross-env package is included in the above commands. If you are using macOS or Linux, you can remove cross-env from the package.json scripts, as it is only necessary for Windows users.
 - Ensure that you have all environment variables set up correctly before starting the servers.
+
+### Development Mode Features
+- Hot reloading enabled
+- Detailed error logging
+- Development-specific middleware
+
+### Debugging
+To run with debug logs:
+```bash
+DEBUG=easymessage:* npm run dev
+```
 
 # **API Documentation**
 Come back to this
@@ -207,7 +251,7 @@ Manages both group chats and direct messages between users.
 - Groups and users maintain separate creation and update timestamps for activity tracking
 
 
-# Authentication and Authorization
+# Authentication and Authorisation
 
 ## Overview
 The application uses JSON Web Tokens (JWT) for stateless authentication, implemented through Passport.js with a Local Strategy for credential verification. User passwords are securely hashed using bcrypt before storage.
@@ -289,3 +333,35 @@ SECRET_KEY=your_jwt_secret_key
     - Users can only access their own resources
     - Token payload determines user context
     - Resource ownership is verified server-side
+
+
+# Testing
+This project uses [Jest](https://jestjs.io/) as the testing framework. The tests primarily focus on the functionality of group and user deletion, ensuring the correct cascading behavior for related data such as messages, message receipts, and group memberships.
+
+## Running Tests
+
+To run the test suite, execute the following command:
+
+```bash
+npm test
+```
+
+## Group Deletion Tests
+- **Test Description**: These tests verify that when a group is deleted, all associated data such as messages and message receipts are correctly removed, and users are disconnected from the group.
+The following cases are covered:
+- The group and its related data (messages, message receipts) should be deleted.
+- Users should be disconnected from the group as members or admins.
+
+## User Deletion Tests
+- **Test Description**: These tests verify that when a user is deleted, the associated group data is updated accordingly, including checking that the user is no longer a member or admin of any group, and their direct messages (DMs) and related receipts are properly handled.
+The following cases are covered:
+- The user is successfully deleted.
+- After deletion, the groups and DMs associated with the user reflect the removal of that user (e.g., admin status removed, members reduced).
+
+### Notes
+- **Database transactions**: The tests use Prisma's $transaction method to handle the deletion process and ensure the related data is removed safely.
+- **Environment setup**: Ensure your .env.test or equivalent testing environment is properly configured before running the tests.
+- **Post-test cleanup**: The afterAll() hook in the test files ensures the database connection is properly closed after the tests run.
+
+# Deployment
+I have deployed the backend code on render and used neon for the production database. Once these are online I have uploaded my environment variables to the render and redeployed for successful deployment.
