@@ -627,7 +627,7 @@ This document outlines all available endpoints in the application. The API is or
     ```
 
 ## Notes
-- All routes utilize Socket.IO for real-time updates
+- All routes utilise Socket.IO for real-time updates
 - Dates are formatted as "DD-MM-YYYY" and times as "HH:MM" in UTC
 - Photo uploads are handled through Multer
 - Direct message groups automatically generate names based on participants
