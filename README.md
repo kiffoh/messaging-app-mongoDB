@@ -17,7 +17,7 @@ Key features of the backend include:
 - 📱 **Direct Messages**: One-to-one private conversations
 
 # Quick Start
-The website is live on [https://messaging-app-client-eight.vercel.app/](). Use the credentials to explore the features of the full-stack application:
+The website is live on [https://messaging-app-client-eight.vercel.app/]. Log in with the provided credentials to explore the features of the full-stack application:
 - **username**: guest
 - **password**: iamaguest
 
