@@ -12,7 +12,7 @@ The backend is built using Node.js and utilises the Prisma ORM for database mana
 - 👥 **Group Chats**: Support for multiple users in conversations
 - 📸 **Media Sharing**: Image upload and sharing capabilities
 - 👤 **User Profiles**: Customisable user profiles with avatars
-- 📱 **Direct Messages**: One-to-one private conversations
+- 📩 **Direct Messages**: One-to-one private conversations
 
 # Quick Start
 [The website is live](https://messaging-app-client-eight.vercel.app/). Log in with the demo credentials to explore the features of the full-stack application:
