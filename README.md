@@ -1,37 +1,10 @@
 # **EasyMessage - Messaging App (Backend)**
 
-**EasyMessage** is a web application for direct and group messaging, inspired by WhatsApp. This project is one of the final projects in the [Odin Project](https://www.theodinproject.com/lessons/nodejs-messaging-app). As part of the learning process, I have reinforced my knowledge on authentification, media-sharing whilst enhancing my skills in real-time server-client communication.
-
-
-The backend is built using Node.js and utilises the Prisma ORM for database management. It is responsible for handling requests from the frontend (RESTful API), setting up and maintaining the database, and managing Socket.IO connections for real-time messaging.
-
-### Core Features
-
-- 🔐 **Secure Authentication**: JWT-based user authentication
-- 💬 **Real-time Messaging**: Instant message delivery using Socket.IO
-- 👥 **Group Chats**: Support for multiple users in conversations
-- 📸 **Media Sharing**: Image upload and sharing capabilities
-- 👤 **User Profiles**: Customisable user profiles with avatars
-- 📩 **Direct Messages**: One-to-one private conversations
-
-# Quick Start
-[The website is live](https://messaging-app-client-eight.vercel.app/). Log in with the demo credentials to explore the features of the full-stack application:
-- **username**: guest
-- **password**: iamaguest
-
-## Technology Stack
-
-- **Runtime**: Node.js (v16+)
-- **Framework**: Express.js
-- **Database**: PostgreSQL
-- **ORM**: Prisma
-- **Authentication**: Passport.js, JWT
-- **Real-time Communication**: Socket.IO
-- **File Upload**: Multer, Cloudinary
-- **Testing**: Jest
-
-
 # **Table of Contents**
+- [Introduction](#introduction)
+- [Features](#features)
+- [Demo](#demo)
+- [Technologies Used](#technologies-used)
 - [Installation](#installation)
 - [Environment Setup](#environment-setup)
 - [Running the Project](#running-the-project)
@@ -41,7 +14,38 @@ The backend is built using Node.js and utilises the Prisma ORM for database mana
 - [Testing](#testing)
 - [Deployment](#deployment)
 
-# **Installation**
+# Introduction
+**EasyMessage** is a web application for direct and group messaging, inspired by WhatsApp. This project is one of the final projects in the [Odin Project](https://www.theodinproject.com/lessons/nodejs-messaging-app) and through it, I have deepened my understanding of key concepts like authentication, media sharing, and real-time server-client communication.
+
+The backend is built with Node.js and leverages Prisma ORM for efficient database management. It serves as the backbone of the app, handling all requests from the frontend via a RESTful API, maintaining and querying the database, and orchestrating real-time messaging with Socket.IO. The backend ensures secure authentication using JWT, facilitates smooth user and group management, and guarantees reliable, real-time communication between users, whether for direct messages or group chats.
+
+This architecture not only emphasises best practices in database interaction and API design but also ensures scalability and maintainability as the application grows.
+
+# Features
+
+- 🔐 **Secure Authentication**: JWT-based user authentication
+- 💬 **Real-time Messaging**: Instant message delivery using Socket.IO
+- 👥 **Group Chats**: Support for multiple users in conversations
+- 📸 **Media Sharing**: Image upload and sharing capabilities
+- 👤 **User Profiles**: Customisable user profiles with avatars
+- 📩 **Direct Messages**: One-to-one private conversations
+
+# Demo
+[The website is live](https://messaging-app-client-eight.vercel.app/). Log in with the demo credentials to explore the features of the full-stack application:
+- **username**: guest
+- **password**: iamaguest
+
+## Technologies Used
+- **Runtime**: Node.js (v16+)
+- **Framework**: Express.js
+- **Database**: PostgreSQL
+- **ORM**: Prisma
+- **Authentication**: Passport.js, JWT
+- **Real-time Communication**: Socket.IO
+- **File Upload**: Multer, Cloudinary
+- **Testing**: Jest
+
+# Installation
 ### **Prerequisites**
 Ensure the following software is installed before proceeding:
 - **Node.js** (v16+ recommended)
@@ -57,16 +61,6 @@ Ensure the following software is installed before proceeding:
     ```bash
     npm install
     ```
-
-This will install all necessary dependencies, including:
-- **Prisma** (for ORM)
-- **Express** (for server)
-- **Passport.js** (for authentication)
-- **jsonwebtoken** (for JWT-based authorization)
-- **socket.io** (for real-time communication)
-- **multer** (for file-uploads)
-- **cloudinary api** (for online-storage)
-- And more...
 
 # **Environment Setup**
 To set up your environment, create a `.env` file in the root directory of your project. This file should contain the following required environment variables, along with descriptions for each:
