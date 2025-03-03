@@ -6,6 +6,7 @@ var logger = require('morgan');
 const cors = require('cors');
 const passport = require('passport');
 require('./configuration/passportConfig');
+const { connectDB } = require('./configuration/mongoDB');
 
 // Import socket.io and http
 const { Server } = require('socket.io');
@@ -23,6 +24,8 @@ dotenv.config({ path: path.resolve(process.cwd(), envFile) });
 console.log(`Current environment: ${process.env.NODE_ENV || 'default'}`);
 
 console.log("Frontend URL: ", process.env.FRONTEND_URL)
+
+connectDB();
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -82,6 +85,8 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+
 
 
 // Export app and io for use in routes/controllers
