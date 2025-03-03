@@ -1,44 +1,117 @@
-const {PrismaClient} = require('@prisma/client');
-const prisma = new PrismaClient();
+const { ObjectId } = require("mongodb");
+const { db } = require('../configuration/mongoDB');
+const { ResultWithContextImpl } = require("express-validator/lib/chain");
 
-async function getMessages(req, res, next, io) {
+async function getGroupsWithMessagesAndUsers(req, res, next, io) {
     const {userId} = req.params;
-    const userID = parseInt(userId)
 
     try {
-        const userMessages = await prisma.group.findMany({
-            where: {
-                members: {
-                    some: {
-                        id: userID,
+        // Format userId into object format to interact with mongoDB
+        const userObjectID = ObjectId.createFromHexString(userId);
+
+        // Aggregation underneath is trying to get all messages from all groups the user is in.
+        
+        // Fetch all groups that user is in
+        // Fetch member information for each group.
+        // Fetch message information for each group. Sort messages by my most recent first
+        // Sort groups by last updated at the start
+
+        // If I were to optimise this for a large dataset: Put limits on the amount of messages recieved for each group
+        // Trigger a seperate request for the remainder of the messages when the user wants to see more 
+        // (e.g. when the user is at the top of the message chain)
+
+        const userGroupMessagesAndUsers = await db().collection('groups').aggregate([
+            {
+                $match: {
+                    members: {
+                        // $in acts as a boolean in the filter e.g. if userObjectID in members array return True
+                        $in: [userObjectID]
                     }
                 }
             },
-            include: {
-                members: true,
-                messages: {
-                    orderBy: {
-                        createdAt: 'desc'
-                    }
-                },
-            },
-            orderBy: {
-                updatedAt: 'desc',
-            }
             
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'members',
+                    foreignField: '_id',
+                    as: 'memberDetails'
+                }              
+            },
+            
+            {
+                $lookup: {
+                    from: 'messages',
+                    localField: '_id',
+                    foreignField: 'groupId',
+                    as: 'messages',
+                    pipeline: [
+                        {$sort: {"createdAt": -1} }
+                    ]
+                }  
+            },
+
+            // Adds a field that represents the lastMessageDate for sorting the groups
+
+            // Copies memberDetails to members
+            // memberDetais variable to be called members to align with frontEnd naming
+            {
+                $addFields: {
+                    lastMessageDate: {
+                        $ifNull: [
+                            { $max: "$messages.createdAt"},
+                            "$updatedAt"
+                        ]
+                    },
+                    
+                    members: "$memberDetails"
+                }
+            },
+
+            {
+                $sort: {"lastMessageDate": -1}
+            },
+
+            {
+                $project: {
+                    // Remove memberDetails
+                    memberDetails:0
+                }
+            }
+
+        ]).toArray();
+
+        // Coverts each objectID to a stringID for frontEnd compatability
+        userGroupMessagesAndUsers.forEach(group => {
+            group.id = group._id.toString();
+            delete group._id;
+            
+            group.members.forEach(member => {
+                member.id = member._id.toString();
+                delete member._id;
+            })
+
+            group.messages.forEach(message => {
+                message.id = message._id.toString();
+                delete message._id;
+
+                message.groupId = message.groupId.toString();
+                message.authorId = message.authorId.toString();
+            })
         })
 
+
         // Name the unnamed groups/direct messages, specific to the user
-        userMessages.forEach(chat => {
+        // e.g. In a direct message chat, the chat is names the reciepent's (non user) username
+        userGroupMessagesAndUsers.forEach(chat => {
             if (chat.name === null) {
                 if (chat.members.length  <= 2) {
-                    const receipient = chat.members.find(member => member.id !== userID);
+                    const receipient = chat.members.find(member => member.id !== userId);
                     chat.name = receipient.username;
                     chat.photo = receipient.photo;
                 } else {
-                    const otherMembers = chat.members.filter(member => member.id !== userID);
-                    const otherMembersUsernames = []
-                    otherMembers.forEach(member => otherMembersUsernames.push(member.username))
+                    const otherMembers = chat.members.filter(member => member.id !== userId);
+                    const otherMembersUsernames = otherMembers.map(member => member.username);
                     chat.name = otherMembersUsernames.slice(0, otherMembersUsernames.length - 1).join(', ') + ' & ' + otherMembersUsernames.slice(otherMembersUsernames.length - 1);
                 }
             }
@@ -48,30 +121,41 @@ async function getMessages(req, res, next, io) {
 
         // Merging and sorting by `updatedAt`
         // const userMessages = mergeSort(groupChats, directMessageChats);
-        res.json(userMessages);
+        res.json(userGroupMessagesAndUsers);
     } catch (err) {
         console.log(err);
-        res.status(500).send('Internal Server Error'); // Handle errors properly
+        res.status(500).json({message:'Internal Server Error'}); // Handle errors properly
     }
 }
 
 async function createMessage(req, res, next, io) {
     const {content, groupId, authorId} = req.body;
-    const groupID = parseInt(groupId);
-    const authorID = parseInt(authorId)
-
     const photoUrl = req.file ? req.file.path : null;
-    console.log(req.file, photoUrl)
 
     try {
-        const newMessage = await prisma.message.create({
-            data: {
-                content,
-                photoUrl,
-                groupId: groupID,
-                authorId: authorID
-            }
+        const groupObjectID = ObjectId.createFromHexString(groupId);
+        const authorObjectID = ObjectId.createFromHexString(authorId);
+
+        const currentTime = new Date();
+
+        const result = await db().collection('messages').insertOne({
+            content,
+            photoUrl,
+            createdAt: currentTime,
+            updatedAt: currentTime,
+            groupId: groupObjectID,
+            authorId: authorObjectID
         })
+
+        const newMessage = {
+            id: result.insertedId.toString(),
+            content,
+            photoUrl,
+            createdAt: currentTime,
+            updatedAt: currentTime,
+            groupId: groupObjectID,
+            authorId: authorObjectID
+        };
 
         // Emit the newMessage event to all connected clients
         io.emit('newMessage', newMessage);
@@ -79,7 +163,7 @@ async function createMessage(req, res, next, io) {
         res.status(201).json(newMessage)
     } catch (err) {
         console.log('Error creating message: ', err);
-        res.status(500).send('Internal Server Error');
+        res.status(500).json({message:'Internal Server Error'});
     }
 }
 
@@ -110,18 +194,19 @@ function mergeSort(arr1, arr2) {
 
 async function updateMessage(req, res, next, io) {
     const {content} = req.body;
-    const {chatId, messageId} = req.params;
-    const messageID = parseInt(messageId);
-
+    const {messageId} = req.params;
+    
     try {
-        const updatedMessage = await prisma.message.update({
-            where: {
-                id: messageID
-            },
-            data: {
-                content: content
-            }
-        })
+        const messageObjectId = ObjectId.createFromHexString(messageId);
+
+        const updatedMessage = await db().collection('messages').findOneAndUpdate(
+            { _id: messageObjectId },
+            { $set: {content} },
+            { returnDocument: 'after'}
+        )
+
+        updatedMessage.id = updatedMessage._id.toString();
+        delete updatedMessage._id;
 
         // Emit the messageUpdated event
         io.emit('messageUpdated', updatedMessage);
@@ -136,25 +221,21 @@ async function updateMessage(req, res, next, io) {
 
 
 async function deleteMessage(req, res, next, io) {
-    const {chatId, messageId} = req.params;
-    const messageID = parseInt(messageId);
+    const {messageId} = req.params;
 
     try {
-        const message = await prisma.message.findUnique({ where: { id: messageID } });
+        const messageObjectId = ObjectId.createFromHexString(messageId);
+
+        const message = await db().collection('messages').findOne({ _id: messageObjectId });
         if (!message) return res.status(404).json({ message: 'Message not found.' });
 
-        // Perform the delete
-        await prisma.$transaction(async (prisma) => {  
-            // Delete the message
-            await prisma.message.delete({
-                where: {
-                    id: messageID
-                }
-            })
+        // Delete the message
+        await db().collection('messages').deleteOne({
+            _id: messageObjectId
         })
 
         // Emit the messageDeleted event
-        io.emit('messageDeleted', messageID);
+        io.emit('messageDeleted', messageObjectId);
 
         return res.status(200).json({ message: 'Message successfully deleted.' });
     } catch (err) {
@@ -165,7 +246,7 @@ async function deleteMessage(req, res, next, io) {
 
 
 module.exports = {
-    getMessages,
+    getGroupsWithMessagesAndUsers,
     createMessage,
     updateMessage,
     deleteMessage
