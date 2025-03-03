@@ -10,7 +10,7 @@ module.exports = function(io) {
         controller(req, res, next, io);
     };
 
-    router.get('/:userId', wrapController(messageController.getMessages));
+    router.get('/:userId', wrapController(messageController.getGroupsWithMessagesAndUsers));
     router.post('/:chatId', uploadMessagePhoto.single('photoUrl'), wrapController(messageController.createMessage));
     router.put('/:chatId/:messageId', wrapController(messageController.updateMessage));
     router.delete('/:chatId/:messageId', wrapController(messageController.deleteMessage));
