@@ -4,8 +4,6 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const cors = require('cors');
-const passport = require('passport');
-require('./configuration/passportConfig');
 
 // Import socket.io and http
 const { Server } = require('socket.io');
@@ -28,6 +26,11 @@ console.log("Frontend URL: ", process.env.FRONTEND_URL)
 const { connectDB } = require('./configuration/mongoDB');
 connectDB();
 
+// Import passport and configure it
+const passport = require('passport');
+require('./configuration/passportConfig');
+
+// Import routes
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 const messageRouter = require('./routes/messages');
