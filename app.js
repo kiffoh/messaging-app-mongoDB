@@ -6,7 +6,6 @@ var logger = require('morgan');
 const cors = require('cors');
 const passport = require('passport');
 require('./configuration/passportConfig');
-const { connectDB } = require('./configuration/mongoDB');
 
 // Import socket.io and http
 const { Server } = require('socket.io');
@@ -25,6 +24,8 @@ console.log(`Current environment: ${process.env.NODE_ENV || 'default'}`);
 
 console.log("Frontend URL: ", process.env.FRONTEND_URL)
 
+// Connect to MongoDB
+const { connectDB } = require('./configuration/mongoDB');
 connectDB();
 
 var indexRouter = require('./routes/index');
