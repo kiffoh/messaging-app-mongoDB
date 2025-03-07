@@ -1,11 +1,12 @@
 const { MongoClient } = require('mongodb');
-
 require('dotenv').config();
 
-const mongo = new MongoClient(process.env.MONGO_DB_CONNECTION_STRING);
-let db;
+console.log("MongoDB String:",process.env.MONGO_DB_CONNECTION_STRING);
 
 async function connectDB() {
+    const mongo = new MongoClient(process.env.MONGO_DB_CONNECTION_STRING);
+    let db;
+
     try {
         await mongo.connect();
         db = mongo.db('messagingApp');
