@@ -1,6 +1,5 @@
 const { ObjectId } = require("mongodb");
 const { db } = require('../configuration/mongoDB');
-const { ResultWithContextImpl } = require("express-validator/lib/chain");
 
 async function getGroupsWithMessagesAndUsers(req, res, next, io) {
     const {userId} = req.params;
