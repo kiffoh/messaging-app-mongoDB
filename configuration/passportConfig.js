@@ -1,7 +1,7 @@
+const { db } = require('./mongoDB');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcrypt');
-const { db } = require('./mongoDB');
 
 async function validatePassword(user, password) {
     return await bcrypt.compare(password, user.password);
