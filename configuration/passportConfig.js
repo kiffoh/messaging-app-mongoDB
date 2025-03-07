@@ -1,8 +1,7 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-const {PrismaClient} = require('@prisma/client');
-const prisma = new PrismaClient();
 const bcrypt = require('bcrypt');
+const { db } = require('./mongoDB');
 
 async function validatePassword(user, password) {
     return await bcrypt.compare(password, user.password);
@@ -13,10 +12,8 @@ passport.use(new LocalStrategy({
     passwordField: 'password'
 }, async (username, password, done) => {
     try {
-        const user = await prisma.user.findUnique({
-            where: {
-                username
-            }
+        const user = await db().collection('users').findOne({
+            username
         });
 
         if (!user) {
