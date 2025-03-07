@@ -22,13 +22,21 @@ console.log(`Current environment: ${process.env.NODE_ENV || 'default'}`);
 
 console.log("Frontend URL: ", process.env.FRONTEND_URL)
 
-// Connect to MongoDB
+// Connect to MongoDB and then initialize passport
 const { connectDB } = require('./configuration/mongoDB');
-connectDB();
+connectDB()
+  .then(() => {
+    // Only require passport config after DB connection is established
+    require('./configuration/passportConfig');
+    console.log('Passport initialised after DB connection');
+  })
+  .catch(err => {
+    console.error('Failed to connect to DB before passport init:', err);
+    process.exit(1);
+  });
 
 // Import passport and configure it
 const passport = require('passport');
-require('./configuration/passportConfig');
 
 // Import routes
 var indexRouter = require('./routes/index');
