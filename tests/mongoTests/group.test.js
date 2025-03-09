@@ -89,7 +89,11 @@ describe('Group tests', () => {
 
         const memberIds = responseData.members.map(member => member.id);
         expect(memberIds).toContain(Ralphie.id);
-        expect(memberIds).toContain(Jamiee.id); 
+        expect(memberIds).toContain(Jamiee.id);
+
+        // As Jamiee is the first name in the members array (e.g. the user), 
+        // the group name should be Ralphie as the group name is the other member's username
+        expect(responseData.name).toEqual('Ralphie');
     })
 
     it("Should find the created group chat", async() => {
