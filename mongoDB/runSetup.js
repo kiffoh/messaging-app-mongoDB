@@ -1,6 +1,7 @@
 const { MongoClient } = require('mongodb');
 require('dotenv').config();
 
+// This script is used to set up the MongoDB database with the unique index on the username field
 async function runSetup() {
     const client = new MongoClient(process.env.MONGO_DB_CONNECTION_STRING);
     
