@@ -1,4 +1,4 @@
-if (process.env.DATABASE_URL === undefined) {
+if (process.env.MONGO_DB_CONNECTION_STRING === undefined) {
   // Environment config
   const dotenv = require('dotenv');
   const path = require('path')
@@ -11,25 +11,28 @@ if (process.env.DATABASE_URL === undefined) {
 
   console.log(`Current environment: ${process.env.NODE_ENV || 'default'}`);
 
-  console.log("Database URL: ", process.env.FRONTEND_URL)
+  console.log("Database URL: ", process.env.MONGO_DB_CONNECTION_STRING)
 }
 
-const { db } = require('../configuration/connectToMongoDB') 
+const { db, connectDB, client } = require('../configuration/connectToMongoDB') 
 
 async function main() {
-    await db().collection('messages').deleteMany({})
-    await db().collection('groups').deleteMany({})
-    await db().collection('users').deleteMany({})
-    console.log('Fake data deleted successfully');
+  await connectDB();
+  console.log('Connected to MongoDB');
+
+  await db().collection('messages').deleteMany({})
+  await db().collection('groups').deleteMany({})
+  await db().collection('users').deleteMany({})
+  console.log('Fake data deleted successfully');
+
+  await client().close();
+  console.log('MongoDB connection closed');
 }
 
 main()
   .catch((e) => {
     console.error(e);
     process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
   });
 
 
