@@ -1,5 +1,5 @@
 const { ObjectId } = require("mongodb");
-const { db } = require('../configuration/mongoDB');
+const { db } = require('../configuration/connectToMongoDB');
 
 async function getGroupsWithMessagesAndUsers(req, res, next, io) {
     const {userId} = req.params;

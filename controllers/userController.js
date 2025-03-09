@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-const {db} = require('../configuration/mongoDB');
+const {db} = require('../configuration/connectToMongoDB');
 const { ObjectId, ReturnDocument } = require('mongodb'); 
 
 const bcrypt = require('bcrypt')

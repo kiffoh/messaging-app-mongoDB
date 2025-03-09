@@ -1,4 +1,4 @@
-const { db } = require('./mongoDB');
+const { db } = require('./connectToMongoDB');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcrypt');

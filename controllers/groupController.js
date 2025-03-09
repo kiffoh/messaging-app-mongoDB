@@ -1,4 +1,4 @@
-const { db, client } = require('../configuration/mongoDB'); 
+const { db, client } = require('../configuration/connectToMongoDB'); 
 const { ObjectId, ReturnDocument } = require('mongodb');
 
 function formatDateTime (isoString) {

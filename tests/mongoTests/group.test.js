@@ -1,4 +1,4 @@
-const { connectDB, db } = require('../../configuration/mongoDB');
+const { connectDB, db } = require('../../configuration/connectToMongoDB');
 const groupController = require('../../controllers/groupController');
 const userController = require('../../controllers/userController');
 
