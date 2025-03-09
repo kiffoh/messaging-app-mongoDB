@@ -14,37 +14,43 @@ if (process.env.DATABASE_URL === undefined) {
   console.log("Database URL: ", process.env.FRONTEND_URL)
 }
 
-const { MongoDB } = require('mongodb');
-const mongo = new MongoDB(process.env.MONGO_DB_CONNECTION_STRING);
-await mongo.connect();
-const db = mongo.database('messagingApp');
-const users = db.collection('users');
-const messages = db.collection('messages');
-const groups = db.collection('groups');
+const { connectDB, db, client } = require('../configuration/connectToMongoDB');
 
+// Default profile pictures
 const defaultPicture = process.env.DEFAULT_PICTURE;
 const defaultGroupPicture = process.env.DEFAULT_GROUP_PICTURE;
 
 async function main() {
+  // Connect to MongoDB
+  await connectDB();
+  const users = db().collection('users');
+  const messages = db().collection('messages');
+  const groups = db().collection('groups');
+
   // Create Users
+
+  async function hashPassword(password) {
+    return await bcrypt.hash(password, 10);
+  }
+
   const user1 = await users.insertOne({
     username: 'johndoe',
-    password: 'password123', // You would hash this in real scenarios
+    password: await hashPassword('password123'),
   });
 
   const user2 = await users.insertOne({
     username: 'janedoe',
-    password: 'password456',
+    password: await hashPassword('password456'),
   });
 
   const test9 = await users.insertOne({
     username: 'test9',
-    password: '123',
+    password: await hashPassword('123'),
   })
 
   const user4 = await users.insertOne({
     username: 'user4',
-    password: '4567',
+    password: await hashPassword('4567'),
   });
 
   // Create Group
@@ -139,5 +145,5 @@ main()
     process.exit(1);
   })
   .finally(async () => {
-    await mongo.close()
+    await client().close()
   });
