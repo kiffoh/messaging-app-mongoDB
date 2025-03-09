@@ -25,6 +25,10 @@ passport.use(new LocalStrategy({
             return done(null, false, {message: 'Incorrect password.'})
         }
 
+        // Refactor user.id to the user object for frontend interactions
+        user.id = user._id.toString();
+        delete user._id;
+
         return done(null, user)
     } catch (err) {
         return done(err);
