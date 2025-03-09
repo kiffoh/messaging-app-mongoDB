@@ -14,14 +14,12 @@ if (process.env.DATABASE_URL === undefined) {
   console.log("Database URL: ", process.env.FRONTEND_URL)
 }
 
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const { db } = require('../configuration/connectToMongoDB') 
 
 async function main() {
-    await prisma.messageReceipt.deleteMany({})
-    await prisma.message.deleteMany({})
-    await prisma.group.deleteMany({})
-    await prisma.user.deleteMany({})
+    await db().collection('messages').deleteMany({})
+    await db().collection('groups').deleteMany({})
+    await db().collection('users').deleteMany({})
     console.log('Fake data deleted successfully');
 }
 
