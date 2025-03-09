@@ -23,7 +23,8 @@ console.log(`Current environment: ${process.env.NODE_ENV || 'default'}`);
 console.log("Frontend URL: ", process.env.FRONTEND_URL)
 
 // Connect to MongoDB and then initialize passport
-const { connectDB } = require('./configuration/mongoDB');
+const { connectDB } = require('./configuration/connectToMongoDB');
+
 connectDB()
   .then(() => {
     // Only require passport config after DB connection is established
