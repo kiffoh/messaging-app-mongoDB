@@ -95,30 +95,30 @@ async function createDirectMessage(req, res) {
         });
 
         if (existingGroup) {
-            personalisedGroupName(existingGroup, user.id);
-
             const groupMembers = await db().collection('users').find({
                 _id: {$in: existingGroup.members}    
             }).toArray();
-
+            
             groupMembers.map(member => {
                 member.id = member._id.toString();
                 delete member._id;
             })
-
+            
             const messages = await db().collection('messages').find({
                 groupId: existingGroup._id
             }).sort({createdAt: 1}).toArray(); 
-
+            
             existingGroup.id = existingGroup._id.toString();
             delete existingGroup._id;
-
+            
             const formattedGroup = {
                 ...existingGroup,
                 members: groupMembers,
                 messages
             }
             
+            personalisedGroupName(formattedGroup, user.id);
+
             return res.status(409).json({formattedGroup, message: 'Direct message group already exists.' });
         }
 
@@ -147,16 +147,16 @@ async function createDirectMessage(req, res) {
         })
 
         // Respond with the created group
-        personalisedGroupName(newGroup, user.id);
-
         newGroup.id = newGroup._id.toString();
         delete newGroup._id;
-
+        
         const formattedGroup = {
             ...newGroup,
             messages: [],
             members: groupMembers
         }
+
+        personalisedGroupName(formattedGroup, user.id);
 
         res.status(201).json({ formattedGroup });
 
@@ -284,6 +284,8 @@ function personalisedGroupName(group, userID) {
         const recipient = group.members.find(member => member.id !== userID);
         group.name = recipient.username;
         group.photo = recipient.photo;
+        console.log(group)
+        console.log(recipient)
     } else {
         const otherMembers = group.members.filter(member => member.id !== userID);
         const otherMembersUsernames = []
